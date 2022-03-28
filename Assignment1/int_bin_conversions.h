@@ -5,10 +5,10 @@
  *      Author: lpandit
  */
 
-#include <stdint.h>
-
 #ifndef INT_BIN_CONVERSIONS_H_
 #define INT_BIN_CONVERSIONS_H_
+
+#include <stdint.h>
 
 typedef enum {
 	CLEAR,
