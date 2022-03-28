@@ -2,6 +2,7 @@
  *
  */
 
+#include <stdint.h>
 #include <stddef.h>
 
 #define CBFIFO_SIZE 128
@@ -16,6 +17,7 @@ static uint32_t write_ptr=0;
  */
 size_t cbfifo_enqueue(void *buf, size_t nbyte)
 {
+
 
 	return -1;
 }
@@ -33,15 +35,15 @@ size_t cbfifo_dequeue(void *buf, size_t nbyte)
  */
 size_t cbfifo_length()
 {
-	return -1;
+	return
 }
 
 /*
  *
  */
-size_t cbfifo_capacity();
+size_t cbfifo_capacity()
 {
-	return -1;
+	return CBFIFO_SIZE;
 }
 
 
