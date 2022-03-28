@@ -35,7 +35,7 @@ size_t cbfifo_dequeue(void *buf, size_t nbyte)
  */
 size_t cbfifo_length()
 {
-	return
+	return (write_ptr - read_ptr) & capacity;
 }
 
 /*
