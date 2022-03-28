@@ -212,7 +212,7 @@ char *hexdump(char *str, size_t size, const void *loc, size_t nbytes)
 			{
 				ch_count++;
 				CHECK_SIZE(ch_count,size, str); //Each byte takes 2 chars.
-				m_str = byte_to_hex(m_str, *(b_ptr+size_bytes-1));
+				m_str = byte_to_hex(m_str, *(b_ptr+size_bytes));
 			}
 
 			// Restore size_bytes for next iteration.
@@ -242,7 +242,10 @@ char *hexdump(char *str, size_t size, const void *loc, size_t nbytes)
 		else
 		{
 			CHECK_SIZE(ch_count, size, str);
-			*m_str++ = ' ';
+			if (total_bytes <= nbytes)
+				{
+					*m_str++ = ' ';
+				}
 		}
 	}
 

@@ -104,7 +104,6 @@ void test_hexdump(char *str, size_t size, const void *loc, size_t nbytes, char *
 {
     static int test_num = 0;
 	char *ret_str = hexdump(str, size, loc, nbytes);
-	printf(ret_str);
 
 	test_num++;
 	assert(ret_str == str);
@@ -145,12 +144,12 @@ int main(int argc, char *argv[])
     		    "a plan, and not quite enough time.";
 
      char *ret =                                               \
-    		 "0x0000  54 6F 20 61 63 68 69 65 76 65 20 67 72 65 61 74\n" \
-    		 "0x0010  20 74 68 69 6E 67 73 2C 20 74 77 6F 20 74 68 69\n" \
-    		 "0x0020  6E 67 73 20 61 72 65 20 6E 65 65 64 65 64 3A 0A\n" \
-    		 "0x0030  61 20 70 6C 61 6E 2C 20 61 6E 64 20 6E 6F 74 20\n" \
-    		 "0x0040  71 75 69 74 65 20 65 6E 6F 75 67 68 20 74 69 6D\n" \
-    		 "0x0050  65 2E 00";
+    		 "0x00000000  54 6F 20 61 63 68 69 65 76 65 20 67 72 65 61 74\n" \
+    		 "0x00000010  20 74 68 69 6E 67 73 2C 20 74 77 6F 20 74 68 69\n" \
+    		 "0x00000020  6E 67 73 20 61 72 65 20 6E 65 65 64 65 64 3A 0A\n" \
+    		 "0x00000030  61 20 70 6C 61 6E 2C 20 61 6E 64 20 6E 6F 74 20\n" \
+    		 "0x00000040  71 75 69 74 65 20 65 6E 6F 75 67 68 20 74 69 6D\n" \
+    		 "0x00000050  65 2E 00";
 
      test_hexdump(str, STR_SIZE, (const void *)loc, strlen(loc), ret);
 
