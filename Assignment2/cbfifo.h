@@ -72,6 +72,10 @@ size_t cbfifo_length();
  */
 size_t cbfifo_capacity();
 
+#ifdef DEBUG
+void _dump_cbfifo();
+#endif
+
 
 #endif // _CBFIFO_H_
 

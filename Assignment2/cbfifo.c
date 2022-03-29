@@ -18,14 +18,34 @@ static int is_full=0;
 
 #define CBFIFO_EMPTY  ((read_ptr == write_ptr) && (!is_full))
 
+#ifdef DEBUG
 /*
  *
  */
 static void _dump_cbfifo()
 {
+	size_t len = cbfifo_length();
+	printf("CBFIFO Length: %d\n", len);
 
+	printf("Read_ptr: %d, Write_ptr: %d, Is_full%d\n", read_ptr, write_ptr, is_full, is_full);
+
+	uint32_t tmp_ptr = read_ptr;
+	for (i = 0; i < len; i++)
+	{
+    	ch = *(cbfifo+tmp_ptr);
+    	printf("%d:%02X ", tmp_ptr, ch);
+    	if (i%16 == 0)
+    	{
+    		printf("\n");
+    	}
+
+    	tmp_ptr = (tmp_ptr+1) & cbfifo_mask;
+	}
+
+	printf("\n");
 
 }
+#endif
 
 /*
  *
@@ -90,7 +110,7 @@ size_t cbfifo_dequeue(void *buf, size_t nbyte)
     	read_ptr = (read_ptr+1) & cbfifo_mask;
     }
 
-    if (len == nbyte)
+    if (nbyte > 0)
     {
     	is_full = 0;
     }
@@ -104,9 +124,16 @@ size_t cbfifo_dequeue(void *buf, size_t nbyte)
  */
 size_t cbfifo_length()
 {
-	return (write_ptr - read_ptr) & cbfifo_mask;
-}
+	if (is_full)
+	{
+		return capacity;
+	}
+	else
+	{
+		return (write_ptr - read_ptr) & cbfifo_mask;
 
+	}
+}
 /*
  *
  */
