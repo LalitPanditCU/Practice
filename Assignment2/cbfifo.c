@@ -20,7 +20,6 @@ size_t cbfifo_enqueue(void *buf, size_t nbyte)
 {
 
 
-
 	return -1;
 }
 
