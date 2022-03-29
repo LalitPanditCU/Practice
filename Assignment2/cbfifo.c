@@ -55,8 +55,8 @@ size_t cbfifo_enqueue(void *buf, size_t nbyte)
 
     for (int i = 0; i < nbyte; i++)
     {
-    	write_ptr = (write_ptr+1) & cbfifo_mask;
     	*(cbfifo+write_ptr) = *((char *)(buf+i));
+    	write_ptr = (write_ptr+1) & cbfifo_mask;
     }
 
     if (spaces == nbyte)
