@@ -34,14 +34,9 @@ void _dump_llfifo(llfifo_t *fifo)
 
 
 	node_t *nodes = fifo->nodes;
-	int i = 0;
-	while (nodes)
+	for (int i = 0; i < fifo->length; i++)
 	{
-    	printf("%d:%02X ", i, *(char *)nodes->element);
-    	if (i%16 == 0)
-    	{
-    		printf("\n");
-    	}
+		printf("%d:%c ", i, *(char *)nodes->element);
 
     	nodes = nodes->nxt;
 	}
