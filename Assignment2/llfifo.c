@@ -21,6 +21,36 @@ struct llfifo_s{
 	uint32_t capacity;
 };
 
+#ifdef DEBUG
+/*
+ *
+ */
+void _dump_llfifo(llfifo_t *fifo)
+{
+	printf("LLFIFO Capacity:%d LLFIFO Length: %d\n", fifo->capacity, fifo->length);
+
+	void *last = (fifo->last) ? fifo->last->element : NULL;
+	printf("LIFO Last:%c\n", (last) ? *(char *)last : '@' );
+
+
+	node_t *nodes = fifo->nodes;
+	int i = 0;
+	while (nodes)
+	{
+    	printf("%d:%02X ", i, *(char *)nodes->element);
+    	if (i%16 == 0)
+    	{
+    		printf("\n");
+    	}
+
+    	nodes = nodes->nxt;
+	}
+
+	printf("\n");
+
+}
+#endif
+
 /*
  *
  */

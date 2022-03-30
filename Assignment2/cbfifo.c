@@ -2,6 +2,7 @@
  *
  */
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -22,17 +23,17 @@ static int is_full=0;
 /*
  *
  */
-static void _dump_cbfifo()
+void _dump_cbfifo()
 {
 	size_t len = cbfifo_length();
 	printf("CBFIFO Length: %d\n", len);
 
-	printf("Read_ptr: %d, Write_ptr: %d, Is_full%d\n", read_ptr, write_ptr, is_full, is_full);
+	printf("Read_ptr: %d, Write_ptr: %d, Is_full%d\n", read_ptr, write_ptr, is_full);
 
 	uint32_t tmp_ptr = read_ptr;
-	for (i = 0; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
-    	ch = *(cbfifo+tmp_ptr);
+    	char ch = *(cbfifo+tmp_ptr);
     	printf("%d:%02X ", tmp_ptr, ch);
     	if (i%16 == 0)
     	{

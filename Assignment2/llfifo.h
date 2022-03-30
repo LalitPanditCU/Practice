@@ -96,4 +96,13 @@ int llfifo_capacity(llfifo_t *fifo);
  */
 void llfifo_destroy(llfifo_t *fifo);
 
+#ifdef DEBUG
+/*
+ *
+ */
+
+void _dump_llfifo(llfifo_t *fifo);
+
+#endif
+
 #endif // _LLFIFO_H_

@@ -6,8 +6,11 @@
  */
 
 #include "test_cbfifo.h"
+#include "test_llfifo.h"
 
 int main(int argc, char *argv[])
 {
-   test_cbfifo();
+	test_llfifo();
+
+	test_cbfifo();
 }
