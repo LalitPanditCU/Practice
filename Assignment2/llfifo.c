@@ -175,15 +175,21 @@ void *llfifo_dequeue(llfifo_t *fifo)
 		node_t *node = fifo->nodes;
 		void *element = node->element;
 
-		fifo->nodes = fifo->nodes->nxt;
 		if (fifo->last == node)
 		{
 			fifo->last = NULL;
+			node->element = NULL;
+		}
+		else
+		{
+			fifo->nodes = fifo->nodes->nxt;
+            node->nxt = fifo->last->nxt;
+            node->element = NULL;
+
+            fifo->last->nxt = node;
 		}
 
-		free (node);
 		fifo->length -= 1;
-		fifo->capacity -= 1;
 
 		return element;
 	}
