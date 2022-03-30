@@ -144,7 +144,15 @@ int llfifo_enqueue(llfifo_t *fifo, void *element)
 		fifo->capacity += fifo->capacity;
 	}
 
-	fifo->last = fifo->last->nxt;
+    if (fifo->last)
+    {
+    	fifo->last = fifo->last->nxt;
+    }
+    else
+    {
+    	fifo->last = fifo->nodes;
+    }
+
 	fifo->last->element = element;
 
 	fifo->length += 1;
@@ -175,6 +183,7 @@ void *llfifo_dequeue(llfifo_t *fifo)
 
 		free (node);
 		fifo->length -= 1;
+		fifo->capacity -= 1;
 
 		return element;
 	}
