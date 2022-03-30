@@ -5,6 +5,7 @@
  *      Author: Lalit
  */
 
+#include <stdio.h>
 #include "llfifo.h"
 #include "test_llfifo.h"
 
@@ -26,7 +27,12 @@ void test_llfifo()
 	{
 		d_array[i] = i;
 		llfifo_enqueue(fifo, d_array+i);
-		_dump_llfifo(fifo);
 	}
 	_dump_llfifo(fifo);
+
+	for (int i = 0; i < 1000;i++)
+	{
+		llfifo_dequeue(fifo);
+		printf("Length: %d Capacity:%d\n", llfifo_length(fifo), llfifo_capacity(fifo));
+	}
 }
