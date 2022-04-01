@@ -9,7 +9,7 @@
 #define TOUCH_H_
 
 void init_touch();
-void touch_scan_lh();
+int touch_scan_lh();
 
 
 #endif /* TOUCH_H_ */
