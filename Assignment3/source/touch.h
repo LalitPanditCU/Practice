@@ -8,8 +8,14 @@
 #ifndef TOUCH_H_
 #define TOUCH_H_
 
+typedef enum {
+	t_LEFT,
+	t_MID,
+	t_RIGHT
+} touch_t;
+
 void init_touch();
-int touch_scan_lh();
+touch_t touch_scan_lh();
 
 
 #endif /* TOUCH_H_ */

@@ -7,6 +7,7 @@
 
 
 #include "MKL25Z4.h"
+#include "touch.h"
 
 //variation of the capacitance from 90 to 700
 #define TOUCH_OFFSET 550  // offset value to be subtracted
@@ -28,7 +29,7 @@ void init_touch()
 								TSI_GENCS_EOSF_MASK; // writing one to clear the end of scan flag
 }
 
-int touch_scan_lh(void)
+touch_t touch_scan_lh(void)
 {
 	unsigned int scan = 0;
 	TSI0->DATA = 	TSI_DATA_TSICH(10u);
@@ -37,5 +38,17 @@ int touch_scan_lh(void)
 	;
 	scan = TOUCH_DATA;
 	TSI0->GENCS |= TSI_GENCS_EOSF_MASK ; //writing one to clear the end of scan flag
-	return scan- TOUCH_OFFSET;
+
+	int sval = scan - TOUCH_OFFSET;
+
+	if (sval < 300)
+	{
+	    return t_LEFT;
+	}
+	else if (sval > 700)
+	{
+		return t_RIGHT;
+	}
+
+	return t_MID;
 }
