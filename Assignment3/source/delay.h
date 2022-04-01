@@ -8,7 +8,9 @@
 #ifndef DELAY_H_
 #define DELAY_H_
 
-void delay(int msecs);
+#include "stdint.h"
+
+void delay(volatile uint32_t msecs);
 
 
 #endif /* DELAY_H_ */

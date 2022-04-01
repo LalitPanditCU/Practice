@@ -5,13 +5,14 @@
  *      Author: lpandit
  */
 
+#include "delay.h"
 
-void delay(int msecs)
+void delay(volatile uint32_t msecs)
 {
 	int loops = msecs >> 4;
 
 	for (; loops; loops--)
 	{
-		__asm volatile ("nop");
+		asm ("nop");
 	}
 }
