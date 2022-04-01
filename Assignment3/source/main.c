@@ -13,6 +13,7 @@
 /* TODO: insert other include files here. */
 #include "delay.h"
 #include "leds.h"
+#include "touch.h"
 
 #define DELAY 10000000U
 
@@ -30,6 +31,12 @@ int main(void) {
 
     PRINTF("Hello World\n");
     init_leds();
+    init_touch();
+
+    /* Test the touch values */
+    while(1) {
+    	PRINTF("SCAN VALUES %d\n", touch_scan_lh());
+    }
 
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {

@@ -9,7 +9,7 @@
 
 void delay(volatile uint32_t msecs)
 {
-	int loops = msecs >> 4;
+	int loops = msecs ;
 
 	for (; loops; loops--)
 	{
