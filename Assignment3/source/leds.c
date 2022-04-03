@@ -24,7 +24,7 @@ void red_led_off()
 {
 	GPIOB->PSOR |= MASK(RED_PIN);
 
-	MY_PRINTF("RED LED ON.");
+	MY_PRINTF("RED LED ON.\n\r");
 }
 
 /*
