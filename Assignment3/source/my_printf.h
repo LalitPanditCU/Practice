@@ -10,10 +10,10 @@
 
 #include "fsl_debug_console.h"
 
-#ifdef DEBUG
-#define MY_PRINTF(...) PRINTF(__VA_ARGS__)
+#ifdef NDEBUG
+#define MY_PRINTF(...)
 #else
-#define MY_PRTINF(...) ""
+#define MY_PRINTF(...) PRINTF(__VA_ARGS__)
 #endif
 
 #endif /* MY_PRINTF_H_ */
