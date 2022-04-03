@@ -50,7 +50,7 @@ touch_t touch_scan_lh(void)
 	}
 
 	int sval = scan - TOUCH_OFFSET;
-	MY_PRINTF ("SLIDER VALUE %d\n", sval);
+	MY_PRINTF ("SLIDER VALUE %d\n\r", sval);
 
 
 	if (sval < 100)
