@@ -12,7 +12,7 @@ void delay(delay_t dl)
 {
 	int loops = (uint32_t) dl;
 
-	MY_PRINTF("START TIMER %d msec\n\r",  (int)dl);
+	MY_PRINTF("START TIMER %d counter\n\r",  (int)dl);
 	for (; loops; loops--)
 	{
 		asm ("nop");

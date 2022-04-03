@@ -135,10 +135,6 @@ int main(void) {
     init_touch();
     init_test_sequence();
 
-    while (1)
-    	PRINTF("%d\n", touch_scan_lh());
-
-
     /* Enter an infinite loop. */
     run_sequence(c_WHITE);
 
