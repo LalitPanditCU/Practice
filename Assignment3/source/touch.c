@@ -7,6 +7,8 @@
 
 
 #include "MKL25Z4.h"
+
+#include "my_printf.h"
 #include "touch.h"
 
 //variation of the capacitance from 90 to 700
@@ -31,17 +33,31 @@ void init_touch()
 
 touch_t touch_scan_lh(void)
 {
+    int pressed = 0;
 	unsigned int scan = 0;
 	TSI0->DATA = 	TSI_DATA_TSICH(10u);
-	TSI0->DATA |= TSI_DATA_SWTS_MASK; //software trigger to start the scan
-	while (!(TSI0->GENCS & TSI_GENCS_EOSF_MASK )) // waiting for the scan to complete 32 times
-	;
+	TSI0->DATA |= TSI_DATA_SWTS_MASK; //software trigger to start the scaN
+
+	for (int i=0; i < 10000 || (!pressed); i++) // waiting for the scan to complete 32 times
+			pressed = (TSI0->GENCS & TSI_GENCS_EOSF_MASK);
+		;
+
 	scan = TOUCH_DATA;
 	TSI0->GENCS |= TSI_GENCS_EOSF_MASK ; //writing one to clear the end of scan flag
 
-	int sval = scan - TOUCH_OFFSET;
+	if (!pressed){
+		return t_NONE;
+	}
 
-	if (sval < 300)
+	int sval = scan - TOUCH_OFFSET;
+	MY_PRINTF ("SLIDER VALUE %d\n", sval);
+
+
+	if (sval < 100)
+	{
+		return t_NONE;
+	}
+	else if (sval < 300)
 	{
 	    return t_LEFT;
 	}

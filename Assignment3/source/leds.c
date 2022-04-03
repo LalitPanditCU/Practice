@@ -7,6 +7,7 @@
 
 #include "MKL25Z4.h"
 
+#include "my_printf.h"
 #include "leds.h"
 
 
@@ -22,6 +23,8 @@
 void red_led_off()
 {
 	GPIOB->PSOR |= MASK(RED_PIN);
+
+	MY_PRINTF("RED LED ON.");
 }
 
 /*
@@ -30,6 +33,7 @@ void red_led_off()
 void red_led_on()
 {
 	GPIOB->PCOR |= MASK(RED_PIN);
+	MY_PRINTF("RED LED OFF.");
 }
 
 /*
@@ -38,6 +42,7 @@ void red_led_on()
 void green_led_off()
 {
 	GPIOB->PSOR |= MASK(GREEN_PIN);
+	MY_PRINTF("GREEN LED ON.");
 }
 
 /*
@@ -46,6 +51,7 @@ void green_led_off()
 void green_led_on()
 {
 	GPIOB->PCOR |= MASK(GREEN_PIN);
+	MY_PRINTF("GREEN LED OFF.");
 }
 
 /*
@@ -54,6 +60,7 @@ void green_led_on()
 void blue_led_off()
 {
 	GPIOD->PSOR |= MASK(BLUE_PIN);
+	MY_PRINTF("BLUE LED ON.");
 }
 
 /*
@@ -62,6 +69,7 @@ void blue_led_off()
 void blue_led_on()
 {
 	GPIOD->PCOR |= MASK(BLUE_PIN);
+	MY_PRINTF("BLUE LED OFF.");
 }
 
 /*
@@ -72,6 +80,7 @@ void all_leds_on()
 	red_led_on();
 	green_led_on();
 	blue_led_on();
+	MY_PRINTF("WHITE LED ON.");
 }
 
 /*
@@ -82,6 +91,7 @@ void all_leds_off()
 	red_led_off();
 	green_led_off();
 	blue_led_off();
+	MY_PRINTF("WHITE LED OFF.");
 }
 
 /*

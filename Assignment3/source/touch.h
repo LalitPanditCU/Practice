@@ -11,7 +11,8 @@
 typedef enum {
 	t_LEFT,
 	t_MID,
-	t_RIGHT
+	t_RIGHT,
+	t_NONE
 } touch_t;
 
 void init_touch();
