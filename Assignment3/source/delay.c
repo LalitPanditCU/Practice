@@ -5,12 +5,14 @@
  *      Author: lpandit
  */
 
+#include "my_printf.h"
 #include "delay.h"
 
-void delay(volatile uint32_t msecs)
+void delay(delay_t dl)
 {
-	int loops = msecs ;
+	int loops = (uint32_t) dl;
 
+	MY_PRINTF("START TIMER %d msec\n",  (int)dl);
 	for (; loops; loops--)
 	{
 		asm ("nop");
