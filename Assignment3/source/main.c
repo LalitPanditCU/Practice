@@ -24,6 +24,8 @@ typedef enum colors
 	c_WHITE
 } colors_t;
 
+#define CHECK_PRESS(val, c_val) if (((val) != (c_val)) && ((val) != t_NONE)) break;
+
 /*
  *
  */
@@ -64,6 +66,7 @@ void init_test_sequence()
 void run_sequence(colors_t color)
 {
 	delay_t on_delay[4] = {d_500, d_1000, d_2000, d_3000};
+	touch_t press=t_NONE;
 
     for (int i = 0; i < 4; i++)
     {
@@ -71,34 +74,37 @@ void run_sequence(colors_t color)
     	{
     	case c_RED:
     		red_led_on();
-    		delay(on_delay[i]);
+    		press=delay_with_touch_check(on_delay[i], t_LEFT);
     		red_led_off();
-    		delay(d_500);
+    		CHECK_PRESS(press, t_LEFT);
+    		press=delay_with_touch_check(d_500, t_LEFT);
     		break;
 
     	case c_GREEN:
     		green_led_on();
-    		delay(on_delay[i]);
+    		press=delay_with_touch_check(on_delay[i], t_MID);
     		green_led_off();
-    		delay(d_500);
+    		CHECK_PRESS(press, t_MID);
+    		press=delay_with_touch_check(d_500, t_MID);
     		break;
 
     	case c_BLUE:
     		blue_led_on();
-    		delay(on_delay[i]);
+    		press=delay_with_touch_check(on_delay[i], t_RIGHT);
     		blue_led_off();
-    		delay(d_500);
+    		CHECK_PRESS(press, t_RIGHT);
+    		press=delay_with_touch_check(d_500, t_RIGHT);
     		break;
 
     	case c_WHITE:
     		all_leds_on();
-    		delay(d_100);
+    		press=delay_with_touch_check(d_100, t_NONE);
     		all_leds_off();
-    		delay(d_100);
+    		if (press != t_NONE) break;
+    		press=delay_with_touch_check(d_100, t_NONE);
     		break;
     	}
 
-    	touch_t press = touch_scan_lh();
     	switch (press){
     	case t_LEFT:
     		color = c_RED;
