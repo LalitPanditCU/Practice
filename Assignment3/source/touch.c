@@ -61,7 +61,7 @@ touch_t touch_scan_lh(void)
 	{
 	    return t_LEFT;
 	}
-	else if (sval > 700)
+	else if (sval > 600)
 	{
 		return t_RIGHT;
 	}

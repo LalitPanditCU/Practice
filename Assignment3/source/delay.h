@@ -9,6 +9,7 @@
 #define DELAY_H_
 
 #include "stdint.h"
+#include "touch.h"
 
 typedef enum d_delay{
 	d_100 = 4800U << 7,
@@ -19,6 +20,7 @@ typedef enum d_delay{
 } delay_t;
 
 void delay(delay_t delay);
+touch_t delay_with_touch_check(delay_t delay, touch_t c_val);
 
 
 #endif /* DELAY_H_ */
