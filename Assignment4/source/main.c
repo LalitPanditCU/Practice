@@ -42,7 +42,7 @@
 /* TODO: insert other include files here. */
 #include "sys_timer.h"
 #include "states.h"
-
+#include "leds.h"
 /* TODO: insert other definitions and declarations here. */
 
 /*
@@ -59,6 +59,19 @@ int main(void) {
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
 #endif
+
+    init_leds();
+    red_led_on(255);
+    red_led_on(0);
+
+    blue_led_on(255);
+    blue_led_on(0);
+
+    green_led_on(255);
+    green_led_on(0);
+
+    while(1);
+
 
     init_systick();
     init_states();
