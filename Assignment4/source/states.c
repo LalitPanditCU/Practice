@@ -60,9 +60,9 @@ void state_loop()
     		 c_state = sinfo[(int)c_state].next_state;
     		 state_change = 0;
     		 reset_timer();
-    	 }
 
-    	 PRINTF("Current state: %d, Time in state: %d\r\n", c_state, get_timer());
+        	 PRINTF("Current state: %d, Time in state: %d\r\n", c_state, get_timer());
+    	 }
      }
 }
 
