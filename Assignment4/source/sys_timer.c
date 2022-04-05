@@ -13,7 +13,6 @@ static volatile uint32_t total_ticks=0;
 static volatile uint32_t reset_ticks=0;
 static volatile int reset_flag=0;
 
-static volatile uint32_t callback_time;
 static volatile void (*callback_fptr)();
 
 /*
@@ -31,10 +30,7 @@ void SysTick_Handler()
 	else
 	{
 		reset_ticks++;
-		if (reset_ticks == callback_time)
-		{
-			callback_fptr();
-		}
+		callback_fptr(reset_ticks);
 	}
 }
 
@@ -85,8 +81,7 @@ ticktime_t get_timer()
 /*
  *
  */
-void set_callback(uint32_t c_time, void (*c_fn)())
+void set_callback_fnc(void (*c_fn)(uint32_t ticks))
 {
-	callback_time = c_time;
 	callback_fptr = c_fn;
 }

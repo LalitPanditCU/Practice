@@ -36,6 +36,7 @@
 #include "MKL25Z4.h"
 #include "fsl_debug_console.h"
 #include "sys_timer.h"
+#include "states.h"
 
 /* TODO: insert other include files here. */
 
@@ -53,18 +54,11 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
+    PRINTF("Hello world\n\r");
+    init_systick();
+    init_states();
+    state_loop();
 
 
-    PRINTF("Hello World\n");
-
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
-    while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
-    }
     return 0 ;
 }

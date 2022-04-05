@@ -20,5 +20,7 @@ void reset_timer();
 
 ticktime_t get_timer();
 
+void set_callback_fnc(void (*c_fn)(uint32_t ticks));
+
 
 #endif /* SYS_TIMER_H_ */
