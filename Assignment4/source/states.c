@@ -140,6 +140,7 @@ static uint32_t cx_color(uint8_t v1, uint8_t v2, uint8_t ticks)
 	int v = (v2 - v1) >> 4;
 	return v1 + _mult(v, ticks);
 }
+
 /*
  *
  */
@@ -201,6 +202,8 @@ void state_loop()
     		 color_ticks = 0;
 
     		 reset_timer();
+
+    		 PRINTF("Now %d, Ticks %d, State %d\n\r", now(), get_timer(), c_state);
     	 }
 
 
@@ -231,6 +234,7 @@ void state_loop()
     		 }
     	 }
      }
+
 }
 
 /*
