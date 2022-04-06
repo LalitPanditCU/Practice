@@ -82,7 +82,7 @@ ticktime_t get_timer()
 /*
  *
  */
-void set_callback_fnc(void (*c_fn)(uint32_t ticks))
+void timer_callback_fnc(void (*c_fn)(uint32_t ticks))
 {
 	callback_fptr = c_fn;
 }

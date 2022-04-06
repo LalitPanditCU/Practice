@@ -41,6 +41,7 @@
 #include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
 #include "sys_timer.h"
+#include "touch.h"
 #include "states.h"
 #include "leds.h"
 /* TODO: insert other definitions and declarations here. */
@@ -62,24 +63,10 @@ int main(void) {
 
     init_leds();
 
-    while (1)
-    {
-    for (int i=0; i < 256; i++)
-    {
-    	PRINTF("%d\n\r", i);
-    	red_led_on(i);
-    }
-
-    for (int i=256; i; i--)
-    {
-    	PRINTF("%d\n\r", i);
-    	red_led_on(i);
-    }
-    }
-
-
     init_systick();
+    init_touch();
     init_states();
+
     state_loop();
 
     return 0 ;
