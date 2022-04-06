@@ -60,32 +60,40 @@ void init_leds()
     PORTD->PCR[BLUE_PIN] &= ~PORT_PCR_MUX_MASK;
     PORTD->PCR[BLUE_PIN]  |= PORT_PCR_MUX(4);   //Alt4
 
-    /* Select TPM clock. */
-    SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1) | SIM_SOPT2_PLLFLLSEL_MASK;
-
-	// Enable clock for TPMs */
+	// Enable clock gating for TPMs */
 	SIM->SCGC6 |= SIM_SCGC6_TPM2_MASK; //For red(TPM2 Ch0) and green(TPM2 Ch1)
 	SIM->SCGC6 |= SIM_SCGC6_TPM0_MASK; //For blue. TPM0 Ch 1
+
+    /* Select TPM clock. */
+    SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1) | SIM_SOPT2_PLLFLLSEL_MASK;
 
 	//Use ps of 128 and mod of 1024. Intensity level is 0-255
 	TPM0->MOD = 1023;  //Period - 1
 	TPM0->SC |= TPM_SC_PS(7); //Prescalar of 128
+	// Continue operation in debug mode
+	TPM0->CONF |= TPM_CONF_DBGMODE(3);
 
 	TPM2->MOD = 1023;
 	TPM2->SC |= TPM_SC_PS(7); //Prescalar of 128
+	// Continue operation in debug mode
+	TPM2->CONF |= TPM_CONF_DBGMODE(3);
 
 	//Set the counter for up counting.
-	TPM0->SC |= (TPM_SC_CPWMS(0) | TPM_SC_CMOD(1)); //CPWM for up counting and CMOD for enabling counting
 	TPM0->CONTROLS[1].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSA_MASK;  //Edge aligned, Low true
 	TPM0->CONTROLS[1].CnV = 0; //Initialize intensity
 
-	TPM2->SC |= (TPM_SC_CPWMS(0) | TPM_SC_CMOD(1)); //CPWM for up counting and CMOD for enabling counting
+	//Start the TPM
+	TPM0->SC |= (TPM_SC_CPWMS(0) | TPM_SC_CMOD(1)); //CPWM for up counting and CMOD for enabling counting
+
+
+	TPM2->CONTROLS[0].CnV = 0;
 	TPM2->CONTROLS[0].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSA_MASK;  //Edge aligned, Low true
+
+	TPM2->CONTROLS[1].CnV = 0;
 	TPM2->CONTROLS[1].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSA_MASK;  //Edge aligned, Low true
 
-	TPM2->CONTROLS[0].CnSC = 0; //Initialize to 0
-	TPM2->CONTROLS[1].CnSC = 0; //Initialize to 0
-
+	//Start the TPM
+	TPM2->SC |= (TPM_SC_CPWMS(0) | TPM_SC_CMOD(1)); //CPWM for up counting and CMOD for enabling counting
 }
 
 
