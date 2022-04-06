@@ -61,19 +61,21 @@ int main(void) {
 #endif
 
     init_leds();
-    red_led_on(255);
-    red_led_on(5);
-    red_led_on(0);
 
-    blue_led_on(255);
-    blue_led_on(5);
-    blue_led_on(0);
+    while (1)
+    {
+    for (int i=0; i < 256; i++)
+    {
+    	PRINTF("%d\n\r", i);
+    	red_led_on(i);
+    }
 
-    green_led_on(255);
-    green_led_on(5);
-    green_led_on(0);
-
-    while(1);
+    for (int i=256; i; i--)
+    {
+    	PRINTF("%d\n\r", i);
+    	red_led_on(i);
+    }
+    }
 
 
     init_systick();
