@@ -44,6 +44,20 @@ void blue_led_on(uint8_t level)
 /*
  *
  */
+void set_led_colors(uint32_t color)
+{
+	uint8_t red = color >> 16;
+	uint8_t green = (color >> 8) & 0xFF;
+	uint8_t blue = color & 0xFF;
+
+	red_led_on(red);
+	green_led_on(green);
+	blue_led_on(blue);
+}
+
+/*
+ *
+ */
 void init_leds()
 {
 	/* Enable clock for the ports. */
