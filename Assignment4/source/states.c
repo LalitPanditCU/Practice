@@ -12,11 +12,39 @@
 #include "states.h"
 
 typedef enum {s_STOP, s_STOP_GO, s_GO, s_GO_WARNING, s_WARNING, s_WARNING_STOP,
-	          s_CROSSWALK, s_CROSSWALK_GO} states_t;
+	          s_TO_CROSSWALK, s_CROSSWALK, s_CROSSWALK_GO} states_t;
 #define STOP_COLOR      0x611E3C
 #define GO_COLOR        0x229622
 #define WARNING_COLOR   0xFFB200
 #define CROSSWALK_COLOR 0x001030
+#define CROSSWALK_RED    0x00
+#define CROSSWALK_GREEN  0x10
+#define CROSSWALK_BLUE   0x30
+
+#define CROSSWALK_ON_TICKS 6
+#define CROSSWALK_OFF_TICKS 4
+
+#ifdef NDEBUG
+#define STOP_TIME 320
+#define STOP_GO_TIME 16
+#define GO_TIME 320
+#define GO_WARNING_TIME 16
+#define WARNING_TIME 80
+#define WARNING_STOP_TIME 16
+#define TO_CROSSWALK_TIME 16
+#define CROSSWALK_TIME 160
+#define CROSSWALK_GO_TIME 16
+#else
+#define STOP_TIME 80
+#define STOP_GO_TIME 16
+#define GO_TIME 80
+#define GO_WARNING_TIME 16
+#define WARNING_TIME 48
+#define WARNING_STOP_TIME 16
+#define TO_CROSSWALK_TIME 16
+#define CROSSWALK_TIME 160
+#define CROSSWALK_GO_TIME 16
+#endif
 
 uint32_t stop_go_color[] = {0x611E3C, 	0x5D263A, 0x592D39, 0x553537, 0x513C36,
 										0x4D4434, 0x494B32, 0x455331, 0x425A2F,
@@ -38,36 +66,39 @@ uint32_t crosswalk_go_color[] = {0x001030, 0x02182F, 0x04212E, 0x06292D, 0x09322
 										   0x135B28, 0x156427, 0x176C26, 0x1A7526,
 										   0x1C7D25, 0x1E8524, 0x208E23, 0x229622};
 
+uint32_t to_crosswalk_color[] = {0x00, 0x00, 0x00, 0x00, 0x00,
+		                               0x00, 0x00, 0x00, 0x00,
+									   0x00, 0x00, 0x00, 0x00,
+									   0x00, 0x00, 0x00, 0x00};
+
 typedef struct {
 	uint32_t time;
 	states_t next_state;
-	uint32_t color;
+	uint32_t *color_ptr;
 } state_info_t;
 
-#ifdef NDEBUG
-state_info_t sinfo[]={{320, s_STOP_GO, STOP_COLOR},
-		              {16, s_GO, STOP_COLOR},
-					  {320, s_GO_WARNING, GO_COLOR},
-					  {16, s_WARNING, GO_COLOR},
-					  {80, s_WARNING_STOP, WARNING_COLOR},
-					  {16, s_STOP, WARNING_COLOR},
-					  {160, s_CROSSWALK, CROSSWALK_COLOR},
-					  {16, s_CROSSWALK_GO, CROSSWALK_COLOR}};
-#else
-state_info_t sinfo[]={{80, s_STOP_GO, STOP_COLOR},
-		              {16, s_GO, STOP_COLOR},
-					  {80, s_GO_WARNING, GO_COLOR},
-					  {16, s_WARNING, GO_COLOR},
-					  {48, s_WARNING_STOP, WARNING_COLOR},
-					  {16, s_STOP, WARNING_COLOR},
-					  {160, s_CROSSWALK, CROSSWALK_COLOR},
-					  {16, s_CROSSWALK_GO, CROSSWALK_COLOR}};
-#endif
+state_info_t sinfo[]={{STOP_TIME, s_STOP_GO, NULL},
+		              {STOP_GO_TIME, s_GO, stop_go_color},
+					  {GO_TIME, s_GO_WARNING, NULL},
+					  {GO_WARNING_TIME, s_WARNING, go_warning_color},
+					  {WARNING_TIME, s_WARNING_STOP, NULL},
+					  {WARNING_STOP_TIME, s_STOP, warning_stop_color},
+					  {TO_CROSSWALK_TIME, s_CROSSWALK, to_crosswalk_color},
+					  {CROSSWALK_TIME, s_CROSSWALK_GO, NULL},
+					  {CROSSWALK_GO_TIME, s_GO, crosswalk_go_color}};
 
 
 static states_t c_state; // Current state
-static int state_change;
-static int color_ticks = 0;
+static uint32_t c_color; // Current color
+static volatile int state_change;     // Flag to indicate state change
+static volatile int color_ticks = 0;  // Ticks for color changes during transitions
+
+
+// Flags for crosswalk state
+static volatile int cross_walk = 0;   //Enter crosswalk flag.
+static volatile int crosswalk_on = 0; //For blinking crosswalks
+static volatile int crosswalk_color;  //Crosswalk start color
+static volatile int crosswalk_ticks;  //For blinking cross walk
 
 /*
  *
@@ -84,6 +115,52 @@ void state_timer_callback(uint32_t ticks)
  */
 void state_touch_callback()
 {
+    cross_walk = 1;
+}
+
+/*
+ *
+ */
+static int _mult(int n, uint32_t m)
+{
+	int sum = 0;
+    for (int i = 0; i < m; i++)
+    {
+    	sum += n;
+    }
+
+    return sum;
+}
+
+/*
+ *
+ */
+static uint32_t cx_color(uint8_t v1, uint8_t v2, uint8_t ticks)
+{
+	int v = (v2 - v1) >> 4;
+	return v1 + _mult(v, ticks);
+}
+/*
+ *
+ */
+static void _fill_crosswalk_colors()
+{
+	uint8_t c_red = c_color >> 16;
+	uint8_t c_green = c_color >> 8 & 0xFF;
+	uint8_t c_blue = c_color & 0xFF;
+
+
+	uint32_t *color_ptr = sinfo[(int)s_TO_CROSSWALK].color_ptr;
+
+	for (int i = 0; i < sizeof(color_ptr); i++)
+	{
+		uint8_t n_red = cx_color(c_red, CROSSWALK_RED, i);
+		uint8_t n_green = cx_color(c_green, CROSSWALK_GREEN, i);
+		uint8_t n_blue = cx_color(c_blue, CROSSWALK_BLUE, i);
+
+		uint32_t n_color = (n_red << 16) + (n_green << 8) + n_blue;
+		color_ptr[i] = n_color;
+	}
 
 }
 
@@ -92,40 +169,66 @@ void state_touch_callback()
  */
 void state_loop()
 {
-    uint32_t color;
+    uint32_t *color_ptr;
 
      while(1)
      {
+
+    	 // Check entry in the cross walk.
+    	 if (cross_walk)
+    	 {
+    		 if (c_state != s_TO_CROSSWALK && c_state != s_CROSSWALK)
+    		 {
+    			 c_state = s_TO_CROSSWALK;
+    			 state_change = 0;
+    			 color_ticks = 0;
+    			 crosswalk_ticks = 0;
+
+                 _fill_crosswalk_colors();
+
+    			 //Set led colors
+    			 reset_timer();
+    		 }
+
+    		 cross_walk = 0;
+    	 }
+
+    	 // Check state change and regular trasnition of states.
     	 if (state_change)
     	 {
     		 state_change = 0;
     		 c_state = sinfo[(int)c_state].next_state;
-    		 reset_timer();
     		 color_ticks = 0;
+
+    		 reset_timer();
     	 }
 
-    	 switch(c_state)
+
+    	 // If state is cross walk, lights have to be blinked.
+    	 if (c_state == s_CROSSWALK)
     	 {
-    	 case s_STOP_GO:
-    		 color = stop_go_color[color_ticks];
-    		 set_led_colors(color);
-    	 	 break;
-    	 case s_GO_WARNING:
-    		 color = go_warning_color[color_ticks];
-    		 set_led_colors(color);
-    		 break;
-    	 case s_WARNING_STOP:
-    		 color = warning_stop_color[color_ticks];
-    		 break;
-    	 case s_CROSSWALK_GO:
-    		 color = crosswalk_go_color[color_ticks];
-    		 set_led_colors(color);
-    		 break;
-
-    	 case
-
-    	 default:
-    		 break;
+    		 if (crosswalk_on && crosswalk_ticks == CROSSWALK_ON_TICKS)
+    		 {
+    			 crosswalk_on = 0;
+    			 set_led_colors(0);
+    			 crosswalk_ticks = 0;
+    		 }
+    		 else if (!crosswalk_on && crosswalk_ticks == CROSSWALK_OFF_TICKS)
+    		 {
+    			 crosswalk_on = 1;
+    			 set_led_colors(CROSSWALK_COLOR);
+    			 crosswalk_ticks = 0;
+    		 }
+    	 }
+    	 else
+    	 {
+        	 // Update the color ticks
+    		 color_ptr = sinfo[(int)c_state].color_ptr;
+    		 if (color_ptr)
+    		 {
+    			 c_color = color_ptr[color_ticks];
+    			 set_led_colors(c_color);
+    		 }
     	 }
      }
 }

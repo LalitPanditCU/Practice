@@ -20,7 +20,7 @@ static volatile void (*callback_fptr)();
 
 //************************************************Function Prototypes*********************************************
 void TSI0_IRQHandler (void){
-	touch_val = TOUCH_DATA - TOUCH_OFFSET;
+	int touch_val = TOUCH_DATA - TOUCH_OFFSET;
 	TSI0->GENCS |= TSI_GENCS_EOSF_MASK ; 	//writing one to clear the flag
 
 	if (touch_val > MIN_TOUCH_VAL)
