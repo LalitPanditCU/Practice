@@ -16,7 +16,7 @@ typedef enum {
 } touch_t;
 
 void init_touch();
-void touch_callback_fnc(void (*c_fn)(uint32_t ticks));
+touch_t touch_scan_lh();
 
 
 #endif /* TOUCH_H_ */

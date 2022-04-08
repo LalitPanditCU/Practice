@@ -6,64 +6,68 @@
  */
 
 
-//************************************************ Pre-Processor Directives *****************************************
-#include <MKL25Z4.H>
+#include "MKL25Z4.h"
+
 #include "touch.h"
 
 //variation of the capacitance from 90 to 700
 #define TOUCH_OFFSET 550  // offset value to be subtracted
 #define TOUCH_DATA (TSI0->DATA & 0xFFFF)//macro for extracting the count from data register
-#define MIN_TOUCH_VAL 100
 
-//************************************************Global Variables*********************************************
-static volatile void (*callback_fptr)();
-
-//************************************************Function Prototypes*********************************************
-void TSI0_IRQHandler (void){
-	int touch_val = TOUCH_DATA - TOUCH_OFFSET;
-	TSI0->GENCS |= TSI_GENCS_EOSF_MASK ; 	//writing one to clear the flag
-
-	if (touch_val > MIN_TOUCH_VAL)
-	{
-		callback_fptr();
-	}
-}
-
-void touch_callback_fnc(void (*c_fn)(uint32_t ticks))
-{
-	callback_fptr = c_fn;
-}
+volatile uint32_t touch_val = 0 ;
 
 void init_touch()
 {
 	SIM->SCGC5 |= SIM_SCGC5_TSI_MASK; // enabling the clock
 
-	TSI0->GENCS = TSI_GENCS_MODE(0u) |
-								TSI_GENCS_REFCHRG(0u) |
-								TSI_GENCS_DVOLT(0u) |
-								TSI_GENCS_EXTCHRG(0u) |
-								TSI_GENCS_PS(0u) |
-								TSI_GENCS_NSCN(31u) |
-								TSI_GENCS_TSIEN_MASK |
-								TSI_GENCS_STPE_MASK |  // enabling the TSI in low power modes
-								TSI_GENCS_EOSF_MASK |
-								TSI_GENCS_ESOR_MASK | //enabling interrupt using end of scan
-								TSI_GENCS_TSIIEN_MASK; //enabling the TSI interrupt
-
-	TSI0->DATA = 	TSI_DATA_TSICH(10u); // selecting channel 10
-	//enaling interrupt in NVIC
-	NVIC_SetPriority(TSI0_IRQn, 3);
-	NVIC_ClearPendingIRQ(TSI0_IRQn);
-	NVIC_EnableIRQ(TSI0_IRQn);
-
-
-	// Allow low leakage stop mode
-	SMC->PMPROT = SMC_PMPROT_ALLS_MASK; //
-	// Enable low-leakage stop mode and regular run mode
-	SMC->PMCTRL = SMC_PMCTRL_STOPM(3) | SMC_PMCTRL_RUNM(0);
-	SMC->STOPCTRL = SMC_STOPCTRL_PSTOPO(0) | SMC_STOPCTRL_VLLSM(3);
-	// Enable LLWU
-	// allow TSI0 to wake LLWU
-	LLWU->ME |= LLWU_ME_WUME4_MASK;
+	TSI0->GENCS = TSI_GENCS_MODE(0u) | //operating in non-noise mode
+								TSI_GENCS_REFCHRG(0u) | //reference oscillator charge and discharge value 500nA
+								TSI_GENCS_DVOLT(0u) | //oscillator voltage rails set to default
+								TSI_GENCS_EXTCHRG(0u) | //electrode oscillator charge and discharge value 500nA
+								TSI_GENCS_PS(0u) |  // frequency clcok divided by one
+								TSI_GENCS_NSCN(31u) | //scanning the electrode 32 times
+								TSI_GENCS_TSIEN_MASK | //enabling the TSI module
+								TSI_GENCS_EOSF_MASK; // writing one to clear the end of scan flag
 }
 
+touch_t touch_scan_lh(void)
+{
+    int pressed = 0;
+	unsigned int scan = 0;
+	TSI0->DATA = 	TSI_DATA_TSICH(10u);
+	TSI0->DATA |= TSI_DATA_SWTS_MASK; //software trigger to start the scaN
+
+	for (int i = 0; i < 10000 && !pressed; i++)
+	{
+		pressed = (TSI0->GENCS & TSI_GENCS_EOSF_MASK);
+	}
+
+	scan = TOUCH_DATA;
+	TSI0->GENCS |= TSI_GENCS_EOSF_MASK ; //writing one to clear the end of scan flag
+
+	if (scan > 100){
+		puts("Scan is good\n\r");
+	}
+
+	if (!pressed){
+		return t_NONE;
+	}
+
+	int sval = scan - TOUCH_OFFSET;
+
+
+	if (sval < 100)
+	{
+		return t_NONE;
+	}
+	else if (sval < 300)
+	{
+	    return t_LEFT;
+	}
+	else if (sval > 600)
+	{
+		return t_RIGHT;
+	}
+
+	return t_MID;
+}
