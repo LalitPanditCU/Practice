@@ -150,10 +150,9 @@ static void _fill_crosswalk_colors()
 	uint8_t c_green = c_color >> 8 & 0xFF;
 	uint8_t c_blue = c_color & 0xFF;
 
-
 	uint32_t *color_ptr = sinfo[(int)s_TO_CROSSWALK].color_ptr;
 
-	for (int i = 0; i < sizeof(color_ptr); i++)
+	for (int i = 0; i < 18; i++)
 	{
 		uint8_t n_red = cx_color(c_red, CROSSWALK_RED, i);
 		uint8_t n_green = cx_color(c_green, CROSSWALK_GREEN, i);
@@ -175,6 +174,9 @@ void state_loop()
      while(1)
      {
 
+     	TSI0->DATA |= TSI_DATA_SWTS_MASK;
+     	asm volatile ("WFI");
+
     	 // Check entry in the cross walk.
     	 if (cross_walk)
     	 {
@@ -189,6 +191,9 @@ void state_loop()
 
     			 //Set led colors
     			 reset_timer();
+#ifdef DEBUG
+    			 PRINTF("Now %d, Ticks %d, State %d\n\r", now(), get_timer(), c_state);
+#endif
     		 }
 
     		 cross_walk = 0;
@@ -202,10 +207,11 @@ void state_loop()
     		 color_ticks = 0;
 
     		 reset_timer();
-
+    		 /*
+#ifdef DEBUG
     		 PRINTF("Now %d, Ticks %d, State %d\n\r", now(), get_timer(), c_state);
+#endif		*/
     	 }
-
 
     	 // If state is cross walk, lights have to be blinked.
     	 if (c_state == s_CROSSWALK)
@@ -233,6 +239,7 @@ void state_loop()
     			 set_led_colors(c_color);
     		 }
     	 }
+
      }
 
 }

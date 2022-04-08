@@ -52,9 +52,11 @@ void init_touch()
 
 	TSI0->DATA = 	TSI_DATA_TSICH(10u); // selecting channel 10
 	//enaling interrupt in NVIC
-	NVIC_SetPriority(TSI0_IRQn, 2);
+	NVIC_SetPriority(TSI0_IRQn, 3);
 	NVIC_ClearPendingIRQ(TSI0_IRQn);
 	NVIC_EnableIRQ(TSI0_IRQn);
+
+
 	// Allow low leakage stop mode
 	SMC->PMPROT = SMC_PMPROT_ALLS_MASK; //
 	// Enable low-leakage stop mode and regular run mode

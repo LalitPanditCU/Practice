@@ -63,7 +63,7 @@ int main(void) {
 
     init_leds();
 
-    init_systick();
+    //init_systick();
     init_touch();
     init_states();
 
