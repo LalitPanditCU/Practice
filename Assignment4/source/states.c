@@ -261,7 +261,7 @@ void set_led_color()
 		 color_ptr = sinfo[(int)c_state].color_ptr;
 		 if (color_ptr && color_ticks_changed)
 		 {
-			 c_color = color_ptr[color_ticks+1];
+			 c_color = color_ptr[color_ticks];
 			 set_led_colors(c_color);
 
 			 color_ticks_changed = 0;

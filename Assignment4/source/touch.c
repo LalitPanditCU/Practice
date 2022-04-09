@@ -50,6 +50,7 @@ touch_t touch_scan_lh(void)
 	}
 
 	int sval = scan - TOUCH_OFFSET;
+	puts("sval %d\n", sval);
 
 
 	if (sval < 100)
