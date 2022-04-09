@@ -45,10 +45,6 @@ touch_t touch_scan_lh(void)
 	scan = TOUCH_DATA;
 	TSI0->GENCS |= TSI_GENCS_EOSF_MASK ; //writing one to clear the end of scan flag
 
-	if (scan > 100){
-		puts("Scan is good\n\r");
-	}
-
 	if (!pressed){
 		return t_NONE;
 	}
