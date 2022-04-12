@@ -11,6 +11,21 @@
 
 #include "pbkdf2.h"
 
+int cmp_str(const uint8_t *b1, const uint8_t *b2, size_t len)
+{
+  for (size_t i=0; i<len; i++)
+    if (b1[i] != b2[i])
+      return 0;
+  return 1;
+}
+
+void cpy_str(uint8_t *d, const uint8_t *s, size_t len)
+{
+
+	  for (size_t i=0; i<len; i++)
+	    d[i] = s[i];
+}
+
 /*
  * See function description in pbkdf2.h
  */
@@ -25,37 +40,50 @@ void hmac_isha(const uint8_t *key, size_t key_len,
   size_t i;
   ISHAContext ctx;
 
-  if (key_len > ISHA_BLOCKLEN) {
-    // If key_len > ISHA_BLOCKLEN reset it to key=ISHA(key)
-    ISHAReset(&ctx);
-    ISHAInput(&ctx, key, key_len);
-    ISHAResult(&ctx, keypad);
+  static ISHAContext ipad_ctx, opad_ctx;
+  static uint8_t lastkey[4096];
+  static size_t lastkey_len;
 
-  } else {
-    // key_len <= ISHA_BLOCKLEN; copy key into keypad, zero pad the result
-    for (i=0; i<key_len; i++)
-      keypad[i] = key[i];
-    for(i=key_len; i<ISHA_BLOCKLEN; i++)
-      keypad[i] = 0x00;
+  if (key_len > 4096 || cmp_str(lastkey, key, key_len) == 0)
+  {
+	  //if (key_len < 4096) cpy_str(lastkey, key, key_len);
+
+	  if (key_len > ISHA_BLOCKLEN) {
+		// If key_len > ISHA_BLOCKLEN reset it to key=ISHA(key)
+		ISHAReset(&ctx);
+		ISHAInput(&ctx, key, key_len);
+		ISHAResult(&ctx, keypad);
+
+	  } else {
+		// key_len <= ISHA_BLOCKLEN; copy key into keypad, zero pad the result
+		for (i=0; i<key_len; i++)
+		  keypad[i] = key[i];
+		for(i=key_len; i<ISHA_BLOCKLEN; i++)
+		  keypad[i] = 0x00;
+	  }
+
+	  // XOR key into ipad and opad
+	  for (i=0; i<ISHA_BLOCKLEN; i++) {
+		ipad[i] = keypad[i] ^ 0x36;
+		opad[i] = keypad[i] ^ 0x5c;
+	  }
+
+	  // Perform inner ISHA
+	  ISHAReset(&ctx);
+	  ISHAInput(&ctx, ipad, ISHA_BLOCKLEN);
+	  cpy_str((uint8_t *)&ipad_ctx, (uint8_t *)&ctx, sizeof(ctx));
+
+	  ISHAInput(&ctx, msg, msg_len);
+	  ISHAResult(&ctx, inner_digest);
+
+	  // perform outer ISHA
+	  ISHAReset(&ctx);
+	  ISHAInput(&ctx, opad, ISHA_BLOCKLEN);
+	  cpy_str((uint8_t *)&opad_ctx, (uint8_t *)&ctx, sizeof(ctx));
+
+	  ISHAInput(&ctx, inner_digest, ISHA_DIGESTLEN);
+	  ISHAResult(&ctx, digest);
   }
-
-  // XOR key into ipad and opad
-  for (i=0; i<ISHA_BLOCKLEN; i++) {
-    ipad[i] = keypad[i] ^ 0x36;
-    opad[i] = keypad[i] ^ 0x5c;
-  }
-
-  // Perform inner ISHA
-  ISHAReset(&ctx);
-  ISHAInput(&ctx, ipad, ISHA_BLOCKLEN);
-  ISHAInput(&ctx, msg, msg_len);
-  ISHAResult(&ctx, inner_digest);
-
-  // perform outer ISHA
-  ISHAReset(&ctx);
-  ISHAInput(&ctx, opad, ISHA_BLOCKLEN);
-  ISHAInput(&ctx, inner_digest, ISHA_DIGESTLEN);
-  ISHAResult(&ctx, digest);
 }
 
 
