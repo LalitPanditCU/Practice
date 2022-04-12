@@ -16,8 +16,10 @@
  * circular shift macro
  */
 #define ISHACircularShift(bits,word) \
-  ((((word) << (bits)) & 0xFFFFFFFF) | ((word) >> (32-(bits))))
+  (((word) << (bits)) | ((word) >> (32-(bits))))
 
+#define MAX_LENGTH (2 * 0x1FFFFFFF)
+#define MAX_LOW_LENGTH 0x1FFFFFFF
 
 /*  
  * Processes the next 512 bits of the message stored in the MBlock
@@ -29,8 +31,9 @@
 static void ISHAProcessMessageBlock(ISHAContext *ctx)
 {
   uint32_t temp; 
-  int t;
+  int t, t4;
   uint32_t W[16];
+  uint8_t  *WB_ptr = (uint8_t *)W;
   uint32_t A, B, C, D, E;
 
   A = ctx->MD[0];
@@ -39,18 +42,14 @@ static void ISHAProcessMessageBlock(ISHAContext *ctx)
   D = ctx->MD[3];
   E = ctx->MD[4];
 
-  for(t = 0; t < 16; t++)
+  for(t4 = 0, t=0; t4 < 64; t4 += 4, t++)
   {
-    W[t] = ((uint32_t) ctx->MBlock[t * 4]) << 24;
-    W[t] |= ((uint32_t) ctx->MBlock[t * 4 + 1]) << 16;
-    W[t] |= ((uint32_t) ctx->MBlock[t * 4 + 2]) << 8;
-    W[t] |= ((uint32_t) ctx->MBlock[t * 4 + 3]);
-  }
+    WB_ptr[t4+3] = ((uint8_t) ctx->MBlock[t4]);
+    WB_ptr[t4+2] = ((uint8_t) ctx->MBlock[t4 + 1]);
+    WB_ptr[t4+1] = ((uint8_t) ctx->MBlock[t4 + 2]);
+    WB_ptr[t4] = ((uint8_t) ctx->MBlock[t4 + 3]);
 
-  for(t = 0; t < 16; t++)
-  {
     temp = ISHACircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t];
-    temp &= 0xFFFFFFFF;
     E = D;
     D = C;
     C = ISHACircularShift(30,B);
@@ -58,11 +57,11 @@ static void ISHAProcessMessageBlock(ISHAContext *ctx)
     A = temp;
   }
 
-  ctx->MD[0] = (ctx->MD[0] + A) & 0xFFFFFFFF;
-  ctx->MD[1] = (ctx->MD[1] + B) & 0xFFFFFFFF;
-  ctx->MD[2] = (ctx->MD[2] + C) & 0xFFFFFFFF;
-  ctx->MD[3] = (ctx->MD[3] + D) & 0xFFFFFFFF;
-  ctx->MD[4] = (ctx->MD[4] + E) & 0xFFFFFFFF;
+  ctx->MD[0] += A;
+  ctx->MD[1] += B;
+  ctx->MD[2] += C;
+  ctx->MD[3] += D;
+  ctx->MD[4] += E;
 
   ctx->MB_Idx = 0;
 }
@@ -88,6 +87,11 @@ static void ISHAPadMessage(ISHAContext *ctx)
    *  block, process it, and then continue padding into a second
    *  block.
    */
+
+  uint8_t *h_ptr = (uint8_t *)&(ctx->Length_High);
+  uint8_t *l_ptr = (uint8_t *)&(ctx->Length_Low);
+
+
   if (ctx->MB_Idx > 55)
   {
     ctx->MBlock[ctx->MB_Idx++] = 0x80;
@@ -115,14 +119,14 @@ static void ISHAPadMessage(ISHAContext *ctx)
   /*
    *  Store the message length as the last 8 octets
    */
-  ctx->MBlock[56] = (ctx->Length_High >> 24) & 0xFF;
-  ctx->MBlock[57] = (ctx->Length_High >> 16) & 0xFF;
-  ctx->MBlock[58] = (ctx->Length_High >> 8) & 0xFF;
-  ctx->MBlock[59] = (ctx->Length_High) & 0xFF;
-  ctx->MBlock[60] = (ctx->Length_Low >> 24) & 0xFF;
-  ctx->MBlock[61] = (ctx->Length_Low >> 16) & 0xFF;
-  ctx->MBlock[62] = (ctx->Length_Low >> 8) & 0xFF;
-  ctx->MBlock[63] = (ctx->Length_Low) & 0xFF;
+  ctx->MBlock[56] = h_ptr[3];
+  ctx->MBlock[57] = h_ptr[2];
+  ctx->MBlock[58] = h_ptr[1];
+  ctx->MBlock[59] = h_ptr[0];
+  ctx->MBlock[60] = l_ptr[3];
+  ctx->MBlock[61] = l_ptr[2];
+  ctx->MBlock[62] = l_ptr[1];
+  ctx->MBlock[63] = l_ptr[0];
 
   ISHAProcessMessageBlock(ctx);
 }
@@ -147,6 +151,9 @@ void ISHAReset(ISHAContext *ctx)
 
 void ISHAResult(ISHAContext *ctx, uint8_t *digest_out)
 {
+
+  uint8_t *md_ptr = (uint8_t *)ctx->MD;
+
   if (ctx->Corrupted)
   {
     return;
@@ -159,10 +166,11 @@ void ISHAResult(ISHAContext *ctx, uint8_t *digest_out)
   }
 
   for (int i=0; i<20; i+=4) {
-    digest_out[i]   = (ctx->MD[i/4] & 0xff000000) >> 24;
-    digest_out[i+1] = (ctx->MD[i/4] & 0x00ff0000) >> 16;
-    digest_out[i+2] = (ctx->MD[i/4] & 0x0000ff00) >> 8;
-    digest_out[i+3] = (ctx->MD[i/4] & 0x000000ff);
+
+    digest_out[i]   = md_ptr[i+3];
+    digest_out[i+1] = md_ptr[i+2];
+    digest_out[i+2] = md_ptr[i+1];
+    digest_out[i+3] = md_ptr[i];
   }
 
   return;
@@ -182,24 +190,30 @@ void ISHAInput(ISHAContext *ctx, const uint8_t *message_array, size_t length)
     return;
   }
 
+  uint32_t length_low_bytes = ctx->Length_Low >> 3;
+  uint32_t length_high_bytes = ctx->Length_High >> 3;
+
+  if (length + length_low_bytes + length_high_bytes  > MAX_LENGTH)
+  {
+	  ctx->Corrupted = 1;
+
+	  return;
+  }
+
+  if (length + length_low_bytes > MAX_LOW_LENGTH)
+  {
+	  ctx->Length_High += (length << 3) + ctx->Length_Low - 0xFFFFFFFF;
+	  ctx->Length_Low = 0xFFFFFFFF;
+  }
+  else
+  {
+	  ctx->Length_Low += (length << 3);
+	  ctx->Length_High = 0;
+  }
+
   while(length-- && !ctx->Corrupted)
   {
-    ctx->MBlock[ctx->MB_Idx++] = (*message_array & 0xFF);
-
-    ctx->Length_Low += 8;
-    /* Force it to 32 bits */
-    ctx->Length_Low &= 0xFFFFFFFF;
-    if (ctx->Length_Low == 0)
-    {
-      ctx->Length_High++;
-      /* Force it to 32 bits */
-      ctx->Length_High &= 0xFFFFFFFF;
-      if (ctx->Length_High == 0)
-      {
-        /* Message is too long */
-        ctx->Corrupted = 1;
-      }
-    }
+    ctx->MBlock[ctx->MB_Idx++] = *message_array;
 
     if (ctx->MB_Idx == 64)
     {
