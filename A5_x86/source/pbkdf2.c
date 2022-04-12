@@ -11,8 +11,11 @@
 
 #include "pbkdf2.h"
 
-int cmp_str(const uint8_t *b1, const uint8_t *b2, size_t len)
+int cmp_str(const uint8_t *b1, size_t lastlen, const uint8_t *b2, size_t len)
 {
+
+  if (lastlen != len) return 0;
+
   for (size_t i=0; i<len; i++)
     if (b1[i] != b2[i])
       return 0;
@@ -44,9 +47,13 @@ void hmac_isha(const uint8_t *key, size_t key_len,
   static uint8_t lastkey[4096];
   static size_t lastkey_len;
 
-  if (key_len > 4096 || cmp_str(lastkey, key, key_len) == 0)
+  if (key_len > 4096 || cmp_str(lastkey, lastkey_len, key, key_len) == 0)
   {
-	  //if (key_len < 4096) cpy_str(lastkey, key, key_len);
+	  if (key_len < 4096)
+		  {
+		  	  cpy_str(lastkey, key, key_len);
+		  	  lastkey_len = key_len;
+		  }
 
 	  if (key_len > ISHA_BLOCKLEN) {
 		// If key_len > ISHA_BLOCKLEN reset it to key=ISHA(key)
@@ -81,6 +88,17 @@ void hmac_isha(const uint8_t *key, size_t key_len,
 	  ISHAInput(&ctx, opad, ISHA_BLOCKLEN);
 	  cpy_str((uint8_t *)&opad_ctx, (uint8_t *)&ctx, sizeof(ctx));
 
+	  ISHAInput(&ctx, inner_digest, ISHA_DIGESTLEN);
+	  ISHAResult(&ctx, digest);
+  }
+  else
+  {
+	  cpy_str((uint8_t *)&ctx, (uint8_t *)&ipad_ctx, sizeof(ctx));
+	  ISHAInput(&ctx, msg, msg_len);
+	  ISHAResult(&ctx, inner_digest);
+
+
+	  cpy_str((uint8_t *)&ctx, (uint8_t *)&opad_ctx, sizeof(ctx));
 	  ISHAInput(&ctx, inner_digest, ISHA_DIGESTLEN);
 	  ISHAResult(&ctx, digest);
   }
