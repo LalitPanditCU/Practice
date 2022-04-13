@@ -134,8 +134,8 @@ static void ISHAPadMessage(ISHAContext *ctx)
 
 void ISHAReset(ISHAContext *ctx)
 {
-  ctx->Length_Low  = 0;
-  ctx->Length_High = 0;
+  ctx->Length_Low  = 0; ctx->Length_Low_Bytes = 0;
+  ctx->Length_High = 0; ctx->Length_High_Bytes = 0;
   ctx->MB_Idx      = 0;
 
   ctx->MD[0]       = 0x67452301;
@@ -190,25 +190,26 @@ void ISHAInput(ISHAContext *ctx, const uint8_t *message_array, size_t length)
     return;
   }
 
-  uint32_t length_low_bytes = ctx->Length_Low >> 3;
-  uint32_t length_high_bytes = ctx->Length_High >> 3;
-
-  if (length + length_low_bytes + length_high_bytes  > MAX_LENGTH)
+  if (length + ctx->Length_Low_Bytes + ctx->Length_High_Bytes  > MAX_LENGTH)
   {
 	  ctx->Corrupted = 1;
 
 	  return;
   }
 
-  if (length + length_low_bytes > MAX_LOW_LENGTH)
+  if (length + ctx->Length_Low_Bytes > MAX_LOW_LENGTH)
   {
 	  ctx->Length_High += (length << 3) + ctx->Length_Low - 0xFFFFFFFF;
+	  ctx->Length_High_Bytes = ctx->Length_High >> 3;
 	  ctx->Length_Low = 0xFFFFFFFF;
+	  ctx->Length_Low_Bytes = 0xFFFFFFFF >> 3;
   }
   else
   {
 	  ctx->Length_Low += (length << 3);
+	  ctx->Length_Low_Bytes = length;
 	  ctx->Length_High = 0;
+	  ctx->Length_High_Bytes = 0;
   }
 
   while(length-- && !ctx->Corrupted)
