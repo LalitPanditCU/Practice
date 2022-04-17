@@ -44,16 +44,13 @@ void hmac_isha(const uint8_t *key, size_t key_len,
   ISHAContext ctx;
 
   static ISHAContext ipad_ctx, opad_ctx;
-  static uint8_t lastkey[4096];
+  static uint8_t lastkey[ISHA_BLOCKLEN];
   static size_t lastkey_len;
 
-  if (key_len > 4096 || cmp_str(lastkey, lastkey_len, key, key_len) == 0)
+  if (cmp_str(lastkey, lastkey_len, key, key_len) == 0)
   {
-	  if (key_len < 4096)
-		  {
-		  	  cpy_str(lastkey, key, key_len);
-		  	  lastkey_len = key_len;
-		  }
+	  cpy_str(lastkey, key, ISHA_BLOCKLEN);
+	  lastkey_len = key_len;
 
 	  if (key_len > ISHA_BLOCKLEN) {
 		// If key_len > ISHA_BLOCKLEN reset it to key=ISHA(key)

@@ -24,6 +24,8 @@ typedef struct
 
   uint32_t Length_Low;   // Message length in bits
   uint32_t Length_High;  // Message length in bits
+  uint32_t Length_Low_Bytes;  // Message length in bytes to avoid conversion
+  uint32_t Length_High_Bytes; // Message length in bytes to avoid conversion
 
   uint8_t MBlock[64];    // 512-bit message blocks
   int MB_Idx;            // Index into message block array
