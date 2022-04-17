@@ -2,7 +2,7 @@ import os
 import glob
 import win32com.client as win32
 
-dirname = '.'
+dirname = 'files'
 names = 'names.txt'
 
 outlook = win32.Dispatch('outlook.application')
