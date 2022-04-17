@@ -3,6 +3,7 @@ import glob
 import win32com.client as win32
 
 dirname = '.'
+names = 'names.txt'
 
 outlook = win32.Dispatch('outlook.application')
 
@@ -33,17 +34,12 @@ def send_mail(dir, fname):
 
     mail.Send()
 
-def get_file_names(dir):
+def get_file_names():
 
-    all_files = glob.glob(dir+'\\*')
+    with open (names) as f:
+        files = f.readlines()
 
-    files = []
-    for f in all_files:
-        f = os.path.basename(f)
-        if f not in ['.', '..'] and not f.endswith('.pub'):
-            files.append(f)
+    return [f.strip() for f in files]
 
-    return files
-
-for f in get_file_names(dirname):
+for f in get_file_names():
     send_mail(dirname, f)
