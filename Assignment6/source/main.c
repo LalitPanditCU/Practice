@@ -11,9 +11,18 @@
 int main(void)
 {
   sysclock_init();
+  uint8_t c;
 
   // TODO: initialize the UART here
-  uart0_init();
+  UART0_init();
+
+  //Start the loop
+  while (1)
+  {
+	  c = UART0_Receive_Poll();
+	  UART0_Transmit_Poll(c+1);
+  }
+
 
   // enter infinite loop
   while (1) {

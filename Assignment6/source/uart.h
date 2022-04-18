@@ -8,6 +8,12 @@
 #ifndef UART_H_
 #define UART_H_
 
-void uart0_init();
+#include <stdint.h>
+
+void UART0_init();
+
+uint8_t UART0_Receive_Poll(void);
+void UART0_Transmit_Poll(uint8_t data);
+
 
 #endif /* UART_H_ */
