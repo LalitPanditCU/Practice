@@ -10,8 +10,8 @@
 
 int main(void)
 {
+  uint8_t c=0;
   sysclock_init();
-  uint8_t c;
 
   // TODO: initialize the UART here
   UART0_init();
@@ -19,14 +19,10 @@ int main(void)
   //Start the loop
   while (1)
   {
+
+	  UART0_Send_String_Poll((uint8_t *)"\n\rRain In spain\n\r");
 	  c = UART0_Receive_Poll();
 	  UART0_Transmit_Poll(c+1);
-  }
-
-
-  // enter infinite loop
-  while (1) {
-    __asm volatile ("nop");
   }
 
   return 0 ;

@@ -14,6 +14,7 @@ void UART0_init();
 
 uint8_t UART0_Receive_Poll(void);
 void UART0_Transmit_Poll(uint8_t data);
+void UART0_Send_String_Poll(uint8_t *str);
 
 
 #endif /* UART_H_ */
