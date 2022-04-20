@@ -22,7 +22,7 @@ int main(void)
 
 	  UART0_Send_String_Poll((uint8_t *)"\n\rRain In spain\n\r");
 	  c = UART0_Receive_Poll();
-	  UART0_Transmit_Poll(c+1);
+	  UART0_Transmit_Poll(c);
   }
 
   return 0 ;
