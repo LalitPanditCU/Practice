@@ -4,6 +4,7 @@
  *  Created on: Apr 22, 2022
  *      Author: lpandit
  */
+#include "hexdump.h"
 #include "cmd.h"
 
 #define ALPHA_CH(x)   (((x) >= 'a' && (x) <= 'z') || ((x) >= 'A' && (x) <= 'Z') || ((x) >= '0' && (x) <= '9'))
@@ -70,6 +71,7 @@ size_t get_tokens(char *sptr, char **tokens)
 void process_cmd(size_t count, const char **tokens)
 {
 	char cmd[255];
+	char dump_str[4096];
 
 	if (count == 0)
 	{
@@ -83,18 +85,32 @@ void process_cmd(size_t count, const char **tokens)
 		if (!strcmp(cmd, "AUTHOR"))
 		{
 			print_line("Lalit Pandit");
-		}
-		else
-		{
-			printf("\r\nUnknown command: (");
-			printf(tokens[0]);
-			printf(")\r\n");
+			return;
 		}
 	}
 	else if (count == 3)
 	{
+	    strupper(tokens[0], cmd);
+		if (!strcmp(cmd, "DUMP"))
+		{
+			int start = (int)ahextoi(tokens[1]);
+			int len = (int)aitoi(tokens[2]);
 
+			if (start != -1 && len != -1 && len <= 640)
+			{
+				hexdump(dump_str, (size_t)4096, (void *) start, (size_t) len);
+				printf(dump_str);
+				return;
+			}
+		}
 	}
+
+	printf("\r\nUnknown command: (");
+	printf(tokens[0]);
+	for (int i=1; i < count; i++)
+		printf(" %s", tokens[i]);
+	printf(")\r\n");
+
 }
 /*
  *
@@ -110,7 +126,7 @@ void get_cmd(char *cmd, size_t size)
 		{
 			c = getchar();
 
-			if (c != 255)
+			if (c != 255 && c != '\r')
 			{
 			  if (c == '\b' && i != 0)  //Backspace
 			  {
@@ -125,12 +141,5 @@ void get_cmd(char *cmd, size_t size)
 			}
 		} while (c != '\r' || i == size);
 
-	    if (i != 0)
-	    {
-	    	  cmd[i-1] = '\0';
-	    }
-	    else
-	    {
-	    	cmd[0] = '\0';
-	    }
+	   cmd[i] = '\0';
 }

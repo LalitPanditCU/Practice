@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <string.h>
 
+#include "hexdump.h"
 
 static char nibble_to_hex(uint8_t byte)
 {
@@ -32,6 +33,86 @@ static char *byte_to_hex(char *str, uint8_t byte)
 }
 
 #define CHECK_SIZE(ch_count, size, str) if (++(ch_count) >= (size)) {*(str) = '\0'; return str;}
+
+/*
+ *
+ */
+int _hexstart(const char *s)
+{
+    if (*s == '\0')
+    	return 0;
+
+    return (*s == '0' && (*(s+1) == 'x' || *(s+1) == 'x'));
+}
+
+/*
+ *
+ */
+uint32_t aitoi(const char *s)
+{
+	uint32_t sum = 0;
+
+	if (*s == '\0')
+		return -1;
+
+	if (_hexstart(s))
+	{
+		return ahextoi(s+2);
+	}
+
+	while (*s)
+	{
+		if (*s >= '0' && *s <= '9')
+		{
+			sum = (sum * 10) + (*s - '0');
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	return sum;
+}
+
+/*
+ *
+ */
+uint32_t ahextoi(const char *s)
+{
+	uint32_t sum = 0;
+
+	if (*s == '\0')
+		return -1;
+
+	if (_hexstart(s))
+	{
+	   s += 2;
+	}
+
+	while (*s)
+	{
+		sum *= 16;
+		if (*s >= '0' && *s <= '9')
+		{
+			sum += (*s - '0');
+		}
+		else if (*s >= 'A' && *s <= 'F')
+		{
+			sum += (10 + (*s - 'A'));
+		}
+		else if (*s >= 'a' && *s <= 'f')
+		{
+			sum +=  (10 + (*s - 'a'));
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	return sum;
+}
 
 /*
  *
