@@ -99,7 +99,9 @@ void process_cmd(size_t count, const char **tokens)
 			if (start != -1 && len != -1 && len <= 640)
 			{
 				hexdump(dump_str, (size_t)4096, (void *) start, (size_t) len);
+				printf("\r\n");
 				printf(dump_str);
+				printf("\r\n");
 				return;
 			}
 		}
