@@ -42,7 +42,7 @@ int _hexstart(const char *s)
     if (*s == '\0')
     	return 0;
 
-    return (*s == '0' && (*(s+1) == 'x' || *(s+1) == 'x'));
+    return (*s == '0' && (*(s+1) == 'x' || *(s+1) == 'X'));
 }
 
 /*
@@ -70,6 +70,8 @@ uint32_t aitoi(const char *s)
 		{
 			return -1;
 		}
+
+		s++;
 	}
 
 	return sum;
@@ -109,6 +111,8 @@ uint32_t ahextoi(const char *s)
 		{
 			return -1;
 		}
+
+		s++;
 	}
 
 	return sum;
