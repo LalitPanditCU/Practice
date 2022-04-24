@@ -8,7 +8,7 @@
 
 #include "cbfifo.h"
 
-#define CBFIFO_SIZE 128
+#define CBFIFO_SIZE 4096
 const uint32_t cbfifo_mask=(CBFIFO_SIZE-1);
 
 typedef struct {

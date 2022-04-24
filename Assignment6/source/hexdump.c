@@ -138,7 +138,7 @@ char *hexdump(char *str, size_t size, const void *loc, size_t nbytes)
 
 	char *m_str = str;   //Pointer for traversing the string
 
-	while (total_bytes <= nbytes)
+	while (total_bytes < nbytes)
 	{
 		// Add the offset if the line_bytes is 0
 		if (line_bytes == 0)
@@ -175,19 +175,25 @@ char *hexdump(char *str, size_t size, const void *loc, size_t nbytes)
 		// Add new line if required.
 		line_bytes++;
 		total_bytes++;
-		if (line_bytes == 16)
+		if (total_bytes != nbytes)
 		{
-			CHECK_SIZE(ch_count, size, str);
-			*m_str++ = '\n';
-			line_bytes = 0;
-		}
-		else
-		{
-			CHECK_SIZE(ch_count, size, str);
-			if (total_bytes <= nbytes)
-				{
-					*m_str++ = ' ';
-				}
+			if (line_bytes == 16)
+			{
+				CHECK_SIZE(ch_count, size, str);
+				*m_str++ = '\n';
+
+				CHECK_SIZE(ch_count, size, str);
+				*m_str++ = '\r';
+				line_bytes = 0;
+			}
+			else
+			{
+				CHECK_SIZE(ch_count, size, str);
+				if (total_bytes < nbytes)
+					{
+						*m_str++ = ' ';
+					}
+			}
 		}
 	}
 
