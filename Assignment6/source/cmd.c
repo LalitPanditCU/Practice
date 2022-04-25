@@ -100,7 +100,11 @@ void process_cmd(size_t count, const char **tokens)
 			{
 				hexdump(dump_str, (size_t)4096, (void *) start, (size_t) len);
 				printf("\r\n");
-				printf(dump_str);
+				char *st = dump_str;
+				while (*st)
+				{
+					printf("%c", *st++);
+				}
 				printf("\r\n");
 				return;
 			}
