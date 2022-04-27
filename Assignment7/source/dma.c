@@ -28,7 +28,7 @@ void Init_DMA(uint16_t * source, uint32_t count)
 			DMA_DCR_SSIZE(2) | DMA_DCR_DSIZE(2) | DMA_DCR_ERQ_MASK | DMA_DCR_CS_MASK;
 
 	NVIC_SetPriority(DMA0_IRQn, 2);
-	NVIC_ClearPending(DMA0_IRQn);
+	NVIC_ClearPendingIRQ(DMA0_IRQn);
 	NVIC_EnableIRQ(DMA0_IRQn);
 
 	DMAMUX0->CHCFG[0] = DMAMUX_CHCFG_SOURCE(54);
@@ -42,7 +42,7 @@ void Start_DMA_Playback()
 	DMA0->DMA[0].SAR  = DMA_SAR_SAR((uint32_t) DMA_Source);
 	DMA0->DMA[0].DAR = DMA_DAR_DAR((uint32_t) (&(DAC0->DAT[0])));
 
-	DMA0->DMA[0].DSR_BCR = DMA_DSR_BCR_BCR(Reload_DMA_Byte_Count);
+	DMA0->DMA[0].DSR_BCR = DMA_DSR_BCR_BCR(DMA_Byte_Count);
 
 	DMA0->DMA[0].DSR_BCR &= ~DMA_DSR_BCR_DONE_MASK;
 

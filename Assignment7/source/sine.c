@@ -10,7 +10,7 @@
 
 #include "sine.h"
 
-static uint16_t sine_lookup[TABLE_SIZE+1];
+static uint16_t sine_lookup[TABLE_SIZE];
 
 /*
  *
@@ -19,9 +19,9 @@ void init_sine()
 {
    double pip2 = 3.14159/2.0;
 
-   for(int i = 0; i <= TABLE_SIZE; i++)
+   for(int i = 0; i < TABLE_SIZE; i++)
    {
-	   double s = sin((i * pip2)/ TABLE_SIZE) * (TRIG_SCALE_FACTOR);
+	   double s = sin((i * pip2)/ (TABLE_SIZE-1)) * (TRIG_SCALE_FACTOR);
 	   sine_lookup[i] = floor(s+0.5);
    }
 }
@@ -61,4 +61,20 @@ int fp_sin(int i)
 	}
 
 	return v;
+}
+
+/*
+ *
+ */
+uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, uint16_t *data)
+{
+	uint32_t num = s_freq/t_freq ;
+
+	for (int i = 0; i < num; i++)
+	{
+		int indx = (TWO_PI * i)/num;
+		data[i] = fp_sin(indx);
+	}
+
+	return num;
 }
