@@ -28,3 +28,5 @@ void Init_DAC (void)
 	// Enable DAC, select VDDA as a reference voltage
 	DAC0->C0 = DAC_C0_DACEN_MASK | DAC_C0_DACRFS_MASK;
 }
+
+

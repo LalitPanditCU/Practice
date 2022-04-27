@@ -10,6 +10,4 @@
 
 void Init_DAC(void);
 
-void Sine_Output(void);
-
 #endif /* DAC_H_ */

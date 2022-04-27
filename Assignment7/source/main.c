@@ -40,8 +40,10 @@
 #include "MKL25Z4.h"
 #include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
+
 #include "sine.h"
-#include "test_sine.h"
+#include "tpm.h"
+#include "dac.h"
 
 /* TODO: insert other definitions and declarations here. */
 
@@ -61,7 +63,7 @@ int main(void) {
 
     PRINTF("Hello World\n");
     init_sine();
-    test_sin();
+    Init_TPM();
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
