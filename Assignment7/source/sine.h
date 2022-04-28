@@ -8,6 +8,8 @@
 #ifndef SINE_H_
 #define SINE_H_
 
+#include <stdint.h>
+
 #define BITS 				(12)
 /*
 #define TRIG_SCALE_FACTOR	((1 << BITS)-2)
@@ -23,8 +25,9 @@
 #define PI3_BY2 			(PI + PI_BY2)
 #define TWO_PI     			(PI + PI)
 
-void init_sine();
+void Init_Sine();
 int fp_sin(int i);
+uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, int16_t *data);
 
 
 

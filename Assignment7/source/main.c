@@ -42,6 +42,7 @@
 /* TODO: insert other include files here. */
 
 #include "sine.h"
+#include "tone.h"
 #include "tpm.h"
 #include "dac.h"
 
@@ -62,7 +63,8 @@ int main(void) {
 #endif
 
     PRINTF("Hello World\n");
-    init_sine();
+    Init_Sine();
+    Init_Tone();
     Init_TPM();
 
     /* Force the counter to be placed into memory. */

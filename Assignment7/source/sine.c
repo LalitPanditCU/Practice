@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 #include <math.h>
-
+#include <stdio.h>
 #include "sine.h"
 
 static uint16_t sine_lookup[TABLE_SIZE];
@@ -15,7 +15,7 @@ static uint16_t sine_lookup[TABLE_SIZE];
 /*
  *
  */
-void init_sine()
+void Init_Sine()
 {
    double pip2 = 3.14159/2.0;
 
@@ -43,7 +43,7 @@ int fp_sin(int i)
 		i += TWO_PI;
 	}
 
-	if (i >= 0 && i <= PI_BY2)
+	if (i <= PI_BY2)
 	{
 		v = sine_lookup[i];
 	}
@@ -66,7 +66,7 @@ int fp_sin(int i)
 /*
  *
  */
-uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, uint16_t *data)
+uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, int16_t *data)
 {
 	uint32_t num = s_freq/t_freq ;
 
