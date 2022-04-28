@@ -10,14 +10,17 @@
 static int16_t * DMA_Source;
 static uint32_t   DMA_Byte_Count;
 
+void (*irq_callback)(void);
+
 /*
  *
  */
-void Init_DMA(int16_t * source, uint32_t count)
+void Init_DMA(int16_t * source, uint32_t count, void (*fp)(void))
 {
 
 	DMA_Source = source;
 	DMA_Byte_Count = count;
+	irq_callback = fp;
 
 	SIM->SCGC7 |= SIM_SCGC7_DMA_MASK;
 	SIM->SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
@@ -54,7 +57,9 @@ void Start_DMA_Playback()
  */
 void DMA0_IRQHandler(void)
 {
+
     DMA0->DMA[0].DSR_BCR |= DMA_DSR_BCR_DONE_MASK;
 
+    irq_callback();
     Start_DMA_Playback();
 }

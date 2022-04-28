@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-void Init_DMA(int16_t * source, uint32_t count);
+void Init_DMA(int16_t * source, uint32_t count, void (*irq_callback)(void));
 void Start_DMA_Playback();
 void DMA0_IRQHandler(void);
 

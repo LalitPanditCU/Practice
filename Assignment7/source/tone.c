@@ -30,6 +30,8 @@ plot_t  p_440hz,
 		p_659hz,
 		p_880hz;
 
+plot_t  *c_ptr;
+
 /*
  *
  */
@@ -52,8 +54,40 @@ void Init_Tone(void)
 /*
  *
  */
-void Play_440Hz_Tone()
+void tone_callback(void)
 {
-     Init_DMA(p_440hz.tone, p_440hz.count);
+	static int count = 0;
+
+	count++;
+
+	if (count == c_ptr->f)
+	{
+		switch (c_ptr->f)
+		{
+		case  f_440Hz:
+			c_ptr = &p_587hz;
+			break;
+		case f_587Hz:
+			c_ptr = &p_659hz;
+		case f_659Hz:
+			c_ptr = &p_880hz;
+			break;
+		case f_880Hz:
+			c_ptr = &p_440hz;
+			break;
+		}
+		count = 0;
+	    Init_DMA(c_ptr->tone, c_ptr->count, tone_callback);
+	}
+
+}
+
+/*
+ *
+ */
+void Play_Tones()
+{
+	 c_ptr = &p_440hz;
+     Init_DMA(c_ptr->tone, c_ptr->count, tone_callback);
      Start_DMA_Playback();
 }

@@ -66,7 +66,7 @@ int main(void) {
     Init_TPM();
     Init_Sine();
     Init_Tone();
-    Play_440Hz_Tone();
+    Play_Tones();
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
