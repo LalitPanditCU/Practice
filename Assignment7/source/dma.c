@@ -7,13 +7,13 @@
 
 #include "MKL25Z4.h"
 
-static uint16_t * DMA_Source;
+static int16_t * DMA_Source;
 static uint32_t   DMA_Byte_Count;
 
 /*
  *
  */
-void Init_DMA(uint16_t * source, uint32_t count)
+void Init_DMA(int16_t * source, uint32_t count)
 {
 
 	DMA_Source = source;

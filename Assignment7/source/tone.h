@@ -9,6 +9,7 @@
 #define TONE_H_
 
 void Init_Tone();
+void Play_440Hz_Tone();
 
 
 #endif /* TONE_H_ */

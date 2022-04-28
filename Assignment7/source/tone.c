@@ -5,6 +5,8 @@
  *      Author: lpandit
  */
 #include "tone.h"
+#include "dma.h"
+
 #include "sine.h"
 
 #define  MAX_TABLE       512
@@ -45,4 +47,13 @@ void Init_Tone(void)
 	p_880hz.f = f_880Hz;
 	p_880hz.count = Init_Table(SAMPLING_FREQ, p_880hz.f, p_880hz.tone);
 
+}
+
+/*
+ *
+ */
+void Play_440Hz_Tone()
+{
+     Init_DMA(p_440hz.tone, p_440hz.count);
+     Start_DMA_Playback();
 }

@@ -63,9 +63,10 @@ int main(void) {
 #endif
 
     PRINTF("Hello World\n");
+    Init_TPM();
     Init_Sine();
     Init_Tone();
-    Init_TPM();
+    Play_440Hz_Tone();
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
