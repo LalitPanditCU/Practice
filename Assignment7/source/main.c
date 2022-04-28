@@ -45,6 +45,7 @@
 #include "tone.h"
 #include "tpm.h"
 #include "dac.h"
+#include "adc.h"
 
 /* TODO: insert other definitions and declarations here. */
 
@@ -67,6 +68,7 @@ int main(void) {
     Init_Sine();
     Init_Tone();
     Play_Tones();
+    Init_ADC();
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
