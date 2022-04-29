@@ -21,7 +21,7 @@ typedef enum  {
 
 typedef struct {
 	frequency_t  f;
-	int16_t      tone[MAX_TABLE];
+	uint16_t     tone[MAX_TABLE];
 	uint32_t     count;
 } plot_t;
 
@@ -69,6 +69,7 @@ void tone_callback(void)
 			break;
 		case f_587Hz:
 			c_ptr = &p_659hz;
+			break;
 		case f_659Hz:
 			c_ptr = &p_880hz;
 			break;
@@ -77,7 +78,7 @@ void tone_callback(void)
 			break;
 		}
 		count = 0;
-	    Init_DMA(c_ptr->tone, c_ptr->count, tone_callback);
+	    Init_DMA(c_ptr->tone, c_ptr->count * 2, tone_callback);
 	}
 
 }
@@ -88,6 +89,6 @@ void tone_callback(void)
 void Play_Tones()
 {
 	 c_ptr = &p_440hz;
-     Init_DMA(c_ptr->tone, c_ptr->count, tone_callback);
+     Init_DMA(c_ptr->tone, c_ptr->count * 2, tone_callback);
      Start_DMA_Playback();
 }

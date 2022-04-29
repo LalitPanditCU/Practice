@@ -64,11 +64,12 @@ int main(void) {
 #endif
 
     PRINTF("Hello World\n");
-    Init_TPM();
+    Init_DAC();
     Init_Sine();
     Init_Tone();
+    //Init_ADC();
     Play_Tones();
-    Init_ADC();
+    Init_TPM();
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;

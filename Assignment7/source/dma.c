@@ -1,13 +1,20 @@
 /*
  * dma.c
  *
+ *  Created on: Apr 29, 2022
+ *      Author: lpandit
+ */
+
+/*
+ * dma.c
+ *
  *  Created on: Apr 27, 2022
  *      Author: lpandit
  */
 
 #include "MKL25Z4.h"
 
-static int16_t * DMA_Source;
+static uint16_t * DMA_Source;
 static uint32_t   DMA_Byte_Count;
 
 void (*irq_callback)(void);
@@ -15,7 +22,7 @@ void (*irq_callback)(void);
 /*
  *
  */
-void Init_DMA(int16_t * source, uint32_t count, void (*fp)(void))
+void Init_DMA(uint16_t * source, uint32_t count, void (*fp)(void))
 {
 
 	DMA_Source = source;
@@ -63,3 +70,4 @@ void DMA0_IRQHandler(void)
     irq_callback();
     Start_DMA_Playback();
 }
+

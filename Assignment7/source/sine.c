@@ -66,14 +66,14 @@ int fp_sin(int i)
 /*
  *
  */
-uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, int16_t *data)
+uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, uint16_t *data)
 {
 	uint32_t num = s_freq/t_freq ;
 
 	for (int i = 0; i < num; i++)
 	{
 		int indx = (TWO_PI * i)/num;
-		data[i] = fp_sin(indx);
+		data[i] = fp_sin(indx) + TRIG_SCALE_FACTOR;
 	}
 
 	return num;

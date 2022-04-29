@@ -16,8 +16,8 @@
 #define TABLE_SIZE          (6431)      //pi/2 * TRIG_SCALE_FACTOR
 */
 
-#define TABLE_SIZE          4800
-#define TRIG_SCALE_FACTOR   3055
+#define TABLE_SIZE          3213
+#define TRIG_SCALE_FACTOR   2045
 
 
 #define PI_BY2              (TABLE_SIZE-1)  //pi/2 * TRIG_SCALE_FACTOR
@@ -27,8 +27,7 @@
 
 void Init_Sine();
 int fp_sin(int i);
-uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, int16_t *data);
-
+uint32_t Init_Table(uint32_t s_freq, uint32_t t_freq, uint16_t *data);
 
 
 #endif /* SINE_H_ */
