@@ -1,7 +1,7 @@
 #!/bin/bash
 exp="2022-10-30"
 input="names.txt"
-output="pubkeyes.txt"
+output="pubkeys.txt"
 dir="files"
 
 zone=:wq
