@@ -1,5 +1,5 @@
 #!/bin/bash
-exp="2022-10-30"
+exp="2022-10-30T00:00:00+0000"
 input="names.txt"
 output="pubkeys.txt"
 sudo="sudo.txt"
@@ -19,7 +19,8 @@ while read -r line
 do
 	line=$(echo $line | cut -f1 -d\@)
 	ssh-keygen -t rsa -f $dir/$line -C $line -b 2048 -q -P ""
-	var=$line':'$(eval cat $dir/$line.pub)' google-ssh {"userName":"'$line'","expireOn":"'$exp'"}'
+	#var=$line':'$(eval cat $dir/$line.pub)' google-ssh {"userName":"'$line'","expireOn":"'$exp'"}'
+	var=$line':'$(eval cat $dir/$line.pub) 
 	echo $var >>$output
 done < "$input"
 
