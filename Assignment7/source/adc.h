@@ -9,5 +9,6 @@
 #define ADC_H_
 
 void Init_ADC();
+int read_adc_sample();
 
 #endif /* ADC_H_ */

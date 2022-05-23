@@ -67,18 +67,13 @@ int main(void) {
     Init_DAC();
     Init_Sine();
     Init_Tone();
-    //Init_ADC();
+    Init_ADC();
     Play_Tones();
     Init_TPM();
 
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
+        int n = read_adc_sample();
+        PRINTF("%d\n\r", n);
     }
     return 0 ;
 }
