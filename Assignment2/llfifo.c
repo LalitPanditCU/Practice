@@ -49,6 +49,20 @@ void _dump_llfifo(llfifo_t *fifo)
 /*
  *
  */
+static void destroy_node_list(node_t *nodes)
+{
+	while (nodes)
+	{
+		node_t *prev = nodes;
+		nodes = nodes->nxt;
+
+		free(prev);
+	}
+}
+
+/*
+ *
+ */
 static node_t *create_node_list(int capacity)
 {
 	node_t *fhd=NULL,
@@ -61,6 +75,7 @@ static node_t *create_node_list(int capacity)
 		if (hd == NULL)
 		{
 			//FREE THE LIST
+			destroy_node_list(fhd);
 			return NULL;
 		}
 
@@ -85,20 +100,6 @@ static node_t *create_node_list(int capacity)
 /*
  *
  */
-static void destroy_node_list(node_t *nodes)
-{
-	while (nodes)
-	{
-		node_t *prev = nodes;
-		nodes = nodes->nxt;
-
-		free(prev);
-	}
-}
-
-/*
- *
- */
 llfifo_t *llfifo_create(int capacity)
 {
 	llfifo_t *ll;
@@ -112,6 +113,7 @@ llfifo_t *llfifo_create(int capacity)
 	ll->nodes = create_node_list(capacity);
 	if (ll->nodes == NULL)
 	{
+		free(ll);
 		return NULL;
 	}
 
