@@ -49,9 +49,7 @@ int int_to_binstr(char *str, size_t size, int32_t num, uint8_t nbits)
     for(int i=nbits-1; i >= 0; i--)
     {
     	uint32_t mask = 1 << i;
-    	str[ret_val] = (num & mask) ? '1' : '0';
-
-    	ret_val++;
+    	str[ret_val++] = (num & mask) ? '1' : '0';
     }
 
     // Finalize the string with null char.
@@ -82,7 +80,7 @@ static char *byte_to_hex(char *str, uint8_t byte)
 {
 
 	*str++ = nibble_to_hex((byte & (0b1111<<4))>>4);
-	*str++ = nibble_to_hex(byte & 0b1111);
+	*str++ = nibble_to_hex(byte);
 
 	return str;
 }
@@ -96,17 +94,10 @@ int uint_to_hexstr(char *str, size_t size, uint32_t num, uint8_t nbits)
 	char *c_str=str;
 
 	//Parameter check.
-	if (!(nbits == 4 || nbits == 8 || nbits == 16 || nbits == 32))
-	{
-		err = 1;
-	}
-
-	//Check the size of the string.
 	int nib_count = nbits >> 2;
-	if (size < (nib_count+2+1)) //Number of hex digits plus 0x plus new line char.
-	{
-		err = 1;
-	}
+	err = size < (nib_count+2+1); //Number of hex digits plus 0x plus new line char.
+
+	err = err || !(nbits == 4 || nbits == 8 || nbits == 16 || nbits == 32);
 
 	//Error return.
 	if (err)
