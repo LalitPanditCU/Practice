@@ -145,9 +145,6 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
-    PRINTF("Hello World\n\r");
-
-
     init_leds();
     init_touch();
     init_test_sequence();
