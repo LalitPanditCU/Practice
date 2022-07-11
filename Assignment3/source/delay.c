@@ -36,10 +36,8 @@ touch_t delay_with_touch_check(delay_t dl, touch_t curr_val)
 			{
 				return tval;
 			}
-			else
-			{
-				poll_time = 0;
-			}
+
+			poll_time = 0;
 		}
 	}
 

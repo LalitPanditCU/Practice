@@ -65,11 +65,15 @@ void init_test_sequence()
  */
 void run_sequence(colors_t color)
 {
+	int i = 0;
+
 	delay_t on_delay[4] = {d_500, d_1000, d_2000, d_3000};
 	touch_t press=t_NONE;
 
-    for (int i = 0; i < 4; i++)
+    while(1)
     {
+    	i &= 0b11;
+
     	switch(color)
     	{
     	case c_RED:
@@ -119,10 +123,7 @@ void run_sequence(colors_t color)
     		break;
     	}
 
-    	if (i == 3)
-    	{
-    		i = 0;
-    	}
+    	i++;  //i will roll over to 0 after 3.
     }
 
 }
