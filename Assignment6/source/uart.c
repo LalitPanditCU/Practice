@@ -125,8 +125,8 @@ void UART0_init()
 	SIM->SOPT2 |= SIM_SOPT2_PLLFLLSEL(0);
 
 	// Set pins to UART0 Rx and Tx
-	PORTA->PCR[1] =  PORT_PCR_MUX(2); // Rx
-	PORTA->PCR[2] =  PORT_PCR_MUX(2); // Tx
+	PORTA->PCR[1] =  PORT_PCR_MUX(ALT2); // Rx
+	PORTA->PCR[2] =  PORT_PCR_MUX(ALT2); // Tx
 
 	// Set baud rate and oversampling ratio
 	sbr = (uint16_t)SBR_VAL;
