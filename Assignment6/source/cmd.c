@@ -8,7 +8,7 @@
 #include "cmd.h"
 
 #define ALPHA_CH(x)   (((x) >= 'a' && (x) <= 'z') || ((x) >= 'A' && (x) <= 'Z') || ((x) >= '0' && (x) <= '9'))
-#define UPPER(x)     (((x) >= 'a') && ((x) <= 'z')) ? x -= 32 : x;
+#define UPPER(x)      (char)((((x) >= 'a') && ((x) <= 'z')) ? x -= 32 : x)
 
 /*
  *
@@ -26,7 +26,7 @@ void strupper(const char *s, char *d)
       while (*s)
       {
     	  char c = *s++;
-    	  *d++ = (c >= 'a' && c <= 'z') ? c -= 32 : c;
+    	  *d++ = UPPER(c);
       }
 
       *d = '\0';
@@ -132,11 +132,11 @@ void get_cmd(char *cmd, size_t size)
 		{
 			c = getchar();
 
-			if (c != 255 && c != '\r')
+			if (c != 255 && c != '\r') // 255 is needed if no char is available.
 			{
-			  if (c == '\b' && i != 0)  //Backspace
+			  if (c == '\b' && i != 0) //Backspace
 			  {
-				  printf("\b \b");
+				  printf("\b \b"); //First backspace moves it back, space erases the char and second backspace erases space
 				  i--;
 			  }
 			  else
@@ -145,7 +145,7 @@ void get_cmd(char *cmd, size_t size)
 				  cmd[i++] = c;
 			  }
 			}
-		} while (c != '\r' || i == size);
+		} while (c != '\r' || i == (size-1)); //Reserve last place(size-1) for '\0' character.
 
-	   cmd[i] = '\0';
+	   cmd[i] = '\0'; //Will overwrite the last character if i == size-1
 }

@@ -20,9 +20,6 @@
 
 #define BAUD_RATE 38400
 
-//#define OVERSAMPLING_RATE (16)
-//#define SBR_VAL  (39)
-
 #define OVERSAMPLING_RATE (16)
 #define SBR_VAL  (39)
 
