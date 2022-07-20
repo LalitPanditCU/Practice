@@ -14,13 +14,13 @@
 #include "uart.h"
 
 /*
-       BR = CLOCK_RATE/(SBR * (OVERSAMPLING_RATE + 1)
-       BR = 24000000/(25 * 25) = 38400
+       BR = CLOCK_RATE/(SBR * (OVERSAMPLING_RATE+1))
+       BR = 24000000/(25 * 25) = 38400 = 24Mhz/39*16
  */
 
 #define BAUD_RATE 38400
 
-#define OVERSAMPLING_RATE (16)
+#define OVERSAMPLING_RATE (15)
 #define SBR_VAL  (39)
 
 #define RX_PIN 1
@@ -133,10 +133,10 @@ void UART0_init()
 	UART0->BDH &= ~UART0_BDH_SBR_MASK;
 	UART0->BDH |= UART0_BDH_SBR(sbr>>8);
 	UART0->BDL = UART0_BDL_SBR(sbr);
-	UART0->C4 |= UART0_C4_OSR(OVERSAMPLING_RATE-1);
+	UART0->C4 |= UART0_C4_OSR(OVERSAMPLING_RATE-1); //Setting it to 15 gives OSR of 16.
 
 	// Disable interrupts for RX active edge and LIN break detect, select two stop bit
-	UART0->BDH |= UART0_BDH_RXEDGIE(0) | UART0_BDH_SBNS(0) | UART0_BDH_LBKDIE(1);
+	UART0->BDH |= UART0_BDH_RXEDGIE(0) | UART0_BDH_SBNS(1) | UART0_BDH_LBKDIE(1);
 
 	// Don't enable loopback mode, use 8 data bit mode, don't use parity
 	UART0->C1 = UART0_C1_LOOPS(0) | UART0_C1_M(0) | UART0_C1_PE(0) ;//| UART_C1_PT(0);
