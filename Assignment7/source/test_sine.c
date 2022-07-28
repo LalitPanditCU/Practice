@@ -1,5 +1,5 @@
 /*
- * test_sine.c
+ * test_sine.c: File with test for your sine function.
  *
  *  Created on: Apr 25, 2022
  *      Author: lpandit
@@ -10,6 +10,14 @@
 #include "sine.h"
 #include "test_sine.h"
 
+/*
+ * Test the sine function.
+ *
+ * Your sin function should accept inputs in the range [INT_MIN, INT_MAX] and
+ * produce outputs in the range [-TRIG_SCALE_FACTOR, TRIG_SCALE_FACTOR].
+ *
+ * Ensure that max_err is <= 2.0 and sum_sq error is <= 12000.
+ */
 void test_sin()
 {
   double act_sin;
@@ -32,4 +40,9 @@ void test_sin()
   }
 
   printf("max_err=%f  sum_sq=%f\n", max_err, sum_sq);
+
+  if (max_err > 2.0 || sum_sq > 12000)
+  {
+	  printf("Error: Do not proceed. Your sine function needs work\n\r");
+  }
 }
