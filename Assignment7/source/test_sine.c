@@ -39,7 +39,7 @@ void test_sin()
     sum_sq += err*err;
   }
 
-  printf("max_err=%f  sum_sq=%f\n", max_err, sum_sq);
+  printf("max_err=%f  sum_sq=%f\n\r", max_err, sum_sq);
 
   if (max_err > 2.0 || sum_sq > 12000)
   {
