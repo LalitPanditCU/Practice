@@ -16,6 +16,8 @@
  * Your sin function should accept inputs in the range [INT_MIN, INT_MAX] and
  * produce outputs in the range [-TRIG_SCALE_FACTOR, TRIG_SCALE_FACTOR].
  *
+ * Your code needs to provide sine.h which should declare TWO_PI and TRIG_SCALE_FACTOR.
+ *
  * Ensure that max_err is <= 2.0 and sum_sq error is <= 12000.
  */
 void test_sin()
